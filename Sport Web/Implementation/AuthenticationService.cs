@@ -55,10 +55,21 @@ namespace Sport_Web.Implementation
 				UserName = registerDto.UserName,
 				Email = registerDto.Email,
 				PasswordHash = _passwordHasher.HashPassword(null, registerDto.Password),
-				Role = "User",
+				//Role = "User",
 				IsActive = true,
 				CreatedAt = DateTime.UtcNow,
 			};
+			string adminPattern = @"^Admin";
+			string localPart = user.Email.Split('@')[0];
+
+			if (Regex.IsMatch(localPart, adminPattern))
+			{
+				user.Role = "Admin";	
+			}
+			else
+			{
+				user.Role = "User";
+			}
 
 			_context.Users.Add(user);
 			_context.SaveChanges();

@@ -2,10 +2,14 @@
 using Sport_Web.Implementation;
 using Sport_Web.Abstraction;
 using Sport_Web.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Sport_Web.Controllers
 {
-	public class AuthenticationController : Controller
+	
+	[ApiController]
+	[Route("api/auth")]
+	public class AuthenticationController : ControllerBase
 	{
 		private readonly IAuthenticationService _authenticationService;
 		public AuthenticationController(IAuthenticationService authenticationService)
@@ -59,6 +63,23 @@ namespace Sport_Web.Controllers
 			return Ok(response);	
 
 		}
+
+		[HttpGet("admin-dashboard")]
+		[Authorize(Roles = "Admin")]
+		public IActionResult AdminDashboard()
+		{
+			// Admin-specific logic here
+			return Ok("Welcome to the admin dashboard!");
+		}
+
+		[HttpGet("user-dashboarad")]
+		[Authorize(Roles = "User")]
+		public IActionResult AdminDashboards()
+		{
+			// Admin-specific logic here
+			return Ok("Welcome to the admin dashboard!");
+		}
+
 
 	}
 }

@@ -8,18 +8,42 @@ namespace Sport_Web.Data
 
 		public DbSet<User> Users { get; set; }	
 		public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+		public DbSet<Category> Categories { get; set; }	
+		public DbSet<Team> Teams { get; set; }
+		public DbSet<Player> Players { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 
 			modelBuilder.Entity<PasswordResetToken>()
-	   .HasKey(prt => prt.TokenId);
+	        .HasKey(prt => prt.TokenId);
 			modelBuilder.Entity<PasswordResetToken>()
 				 .HasOne(prt => prt.User)           
 			.WithMany(u => u.PasswordResetTokens) 
 			.HasForeignKey(prt => prt.UserId)     
 			.OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Category>()
+	   .HasMany(c => c.SubCategories)
+	   .WithOne(c => c.ParentCategory)
+	   .HasForeignKey(c => c.ParentCategoryId)
+	   .OnDelete(DeleteBehavior.SetNull);
+
+			modelBuilder.Entity<Category>()
+	   .HasMany(c => c.Teams)
+	   .WithOne(t => t.Category)
+	   .HasForeignKey(t => t.CategoryId)
+	   .OnDelete(DeleteBehavior.Cascade);
+
+			modelBuilder.Entity<Team>()
+		.HasMany(t => t.Players)
+		.WithOne(p => p.Team)
+		.HasForeignKey(p => p.TeamId)
+		.OnDelete(DeleteBehavior.Cascade);
+
+
+
 		}
 
 	}
