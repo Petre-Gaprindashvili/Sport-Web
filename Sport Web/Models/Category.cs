@@ -17,6 +17,9 @@ namespace Sport_Web.Models
 		public ICollection<Team> Teams { get; set; } 
 
 		public string? ImageUrl { get; set; }
+		[JsonIgnore]
+		public ICollection<CategoryTab> CategoryTabs { get; set; }	
+
 
 	}
 }

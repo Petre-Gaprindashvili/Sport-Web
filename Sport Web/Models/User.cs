@@ -8,10 +8,11 @@
 		public string PasswordHash { get; set; }	
 		public string Role { get; set; }
 		public bool IsActive { get; set; }
-		public DateTime CreatedAt { get; set; } 
+		public DateTime CreatedAt { get; set; }  
 
 		public ICollection<PasswordResetToken> PasswordResetTokens { get; set; }	
 
 
 	}
 }
+

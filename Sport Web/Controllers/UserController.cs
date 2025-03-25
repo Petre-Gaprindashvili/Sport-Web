@@ -8,11 +8,11 @@ namespace Sport_Web.Controllers
 {
 	
 	[ApiController]
-	[Route("api/auth")]
-	public class AuthenticationController : ControllerBase
+	[Route("api/users")]
+	public class UserController : ControllerBase
 	{
-		private readonly IAuthenticationService _authenticationService;
-		public AuthenticationController(IAuthenticationService authenticationService)
+		private readonly IUserService _authenticationService;
+		public UserController(IUserService authenticationService)
 		{
 			_authenticationService = authenticationService;	
 		}
@@ -62,22 +62,6 @@ namespace Sport_Web.Controllers
 			}
 			return Ok(response);	
 
-		}
-
-		[HttpGet("admin-dashboard")]
-		[Authorize(Roles = "Admin")]
-		public IActionResult AdminDashboard()
-		{
-			// Admin-specific logic here
-			return Ok("Welcome to the admin dashboard!");
-		}
-
-		[HttpGet("user-dashboarad")]
-		[Authorize(Roles = "User")]
-		public IActionResult AdminDashboards()
-		{
-			// Admin-specific logic here
-			return Ok("Welcome to the admin dashboard!");
 		}
 
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Sport_Web.Enums;
 using Sport_Web.Models;
 namespace Sport_Web.Data
 {
@@ -9,6 +10,7 @@ namespace Sport_Web.Data
 		public DbSet<User> Users { get; set; }	
 		public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
 		public DbSet<Category> Categories { get; set; }	
+		public DbSet<CategoryTab> CategoryTabs { get; set; }
 		public DbSet<Team> Teams { get; set; }
 		public DbSet<Player> Players { get; set; }
 
@@ -42,9 +44,24 @@ namespace Sport_Web.Data
 		.HasForeignKey(p => p.TeamId)
 		.OnDelete(DeleteBehavior.Cascade);
 
+			modelBuilder.Entity<CategoryTab>()
+	.HasKey(s => s.Id); 
 
+			modelBuilder.Entity<CategoryTab>()
+				.HasOne(s => s.Category)  
+				.WithMany(c => c.CategoryTabs)  
+				.HasForeignKey(s => s.CategoryId)  
+				.OnDelete(DeleteBehavior.Cascade);
+			modelBuilder.Entity<CategoryTab>()
+	  .Property(ct => ct.CategoryType)
+	  .HasConversion(
+		  v => v.ToString(),  // Convert the enum to string when saving to the database
+		  v => (CategoryType)Enum.Parse(typeof(CategoryType), v) // Convert string back to enum when reading from the database
+	  );
 
 		}
+
+
 
 	}
 }
