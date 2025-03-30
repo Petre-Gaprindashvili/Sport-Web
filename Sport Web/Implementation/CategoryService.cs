@@ -5,7 +5,10 @@ using Sport_Web.Data;
 using Sport_Web.DTO;
 using Sport_Web.Enums;
 using Sport_Web.Models;
+using Newtonsoft.Json;
 using System.Linq.Expressions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.AspNetCore.Components.Sections;
 namespace Sport_Web.Implementation
 {
 	public class CategoryService : ICategoryService
@@ -46,7 +49,7 @@ namespace Sport_Web.Implementation
 
 		}
 
-		public async Task<List<CategoryResponseDto>> GetAllCategories()
+		public async Task<List<CategoryResponseDto>> GetAllCategoriesAsync()
 		{
 			var getallcategory = _context.Categories.Select(c => new CategoryResponseDto
 			{
@@ -57,7 +60,7 @@ namespace Sport_Web.Implementation
 		}
 
 
-		public async Task<CategoryWithSubCategoriesDto> GetCategoryById(int id)
+		public async Task<CategoryWithSubCategoriesDto> GetCategoryByIdAsync(int id)
 		{
 
 			var subCategory = await _context.Categories.Where(c => c.Id == id)
@@ -113,7 +116,7 @@ namespace Sport_Web.Implementation
 
 
 
-		public async Task<SubCategoryResponseDto> AddSubCategoryAsync(AddSubCategoryDto subCategoryDto)
+		public async Task<SubCategoryResponseDto> AddSubCategoryAsync(SubCategoryDto subCategoryDto)
 		{
 			string imageUrl = await _imageUploadService.UploadImageAsync(subCategoryDto.Image);
 
@@ -149,7 +152,7 @@ namespace Sport_Web.Implementation
 				SubCategories = subCategory.SubCategories.Select(c => new SubCategoryResponseDto
 				{
 					Id = c.Id,
-					Name = c.Name,
+					Name = c.Name, 
 					ImageUrl = c.ImageUrl,
 					ParentCategoryId = c.ParentCategoryId,
 				}).ToList()
@@ -157,6 +160,7 @@ namespace Sport_Web.Implementation
 			return categoryResponse;
 
 		}
+
 
 		public async Task<SubCategoryResponseDto> UpdateSubCategoryAsync(int id, SubCategoryUpdateDto subCategoryUpdateDto)
 		{
@@ -193,68 +197,71 @@ namespace Sport_Web.Implementation
 		}
 
 
-		public async Task<TabsForCategoryResponseDto> AddTabForCategoryAsync(TabsForCategoryDto tabsForCategoryDto)
+		public async Task<SectionCategortResponseDto> AddTabForCategoryAsync(SectionCategoryDto sectionCategoryDto)
 		{
-			var category = await _context.Categories.FindAsync(tabsForCategoryDto.CategoryId);
+			var category = await _context.Categories.FindAsync(sectionCategoryDto.CategoryId);
 			if (category == null)
 			{
-				var response = new AuthResponseDto { IsSuccess =  false,  Message = "Category not found" };
+				var response = new ResponseDto { IsSuccess = false, Message = "Category not found" };
 			}
 
 			var categoryType = category.ParentCategoryId == null ? CategoryType.ParentCategory : CategoryType.SubCategory;
 
-			var categoryTab = new CategoryTab
+			var categoryTab = new CategorySection
 			{
-				TabName = tabsForCategoryDto.TabName,
-				CategoryId = tabsForCategoryDto.CategoryId,
+				TabName = sectionCategoryDto.SectionName,
+				CategoryId =sectionCategoryDto.CategoryId,
 				CategoryName = category.Name,
 				CategoryType = categoryType,
-				
-				
 
 			};
 
-			_context.CategoryTabs.Add(categoryTab);
+			_context.categorySections.Add(categoryTab);
 			await _context.SaveChangesAsync();
 
-
-			 return  new TabsForCategoryResponseDto
+			var sectionContent = new Sport_Web.Models.SectionContent
 			{
+				CategorySectionId = categoryTab.Id,
+				ContentType = categoryTab.TabName,
 
-      			TabName = categoryTab.TabName,
-				CategoryId = categoryTab.CategoryId,
-				CategoryName = categoryTab.CategoryName,
-				CategoryType = categoryTab.CategoryType.ToString(),
 			};
+
+			_context.SectionContents.Add(sectionContent);
+			await  _context.SaveChangesAsync();	
+
+			return new SectionCategortResponseDto
+			{
+
+				SectionName = categoryTab.TabName,
+				CategoryId = categoryTab.CategoryId,
 			
-			}
-
-		public async Task<List<TabsForCategoryResponseDto>> GetParentCategoryTabsAsync(int parentCategoryId)
-		{
-			var tabs = await _context.CategoryTabs.Where(tab=> tab.CategoryId == parentCategoryId
-			&& tab.CategoryType == CategoryType.ParentCategory).ToListAsync();
-			if(tabs == null)
-			{
-				var response = new AuthResponseDto
-				{
-					IsSuccess = false,
-					Message = "Tabs for parentcategory not found"
-				};
-			}
-
-			return tabs.Select(tab=> new TabsForCategoryResponseDto
-			{
-		       TabName=tab.TabName,		
-			   CategoryId=tab.CategoryId,	
-			   CategoryName=tab.CategoryName,	
-			   CategoryType = tab.CategoryType.ToString(),	
-			}).ToList();
+			};
 
 		}
 
+		public async Task<List<SectionCategortResponseDto>> GetAllTabsAsync()
+		{
+			var tabs = await _context.SectionContents.Select(tab => new SectionCategortResponseDto
+			{
+				CategoryId = tab.CategorySectionId,
+				SectionName = tab.ContentType,
+			}).ToListAsync();
+			if (tabs == null)
+			{
+				throw new ArgumentNullException("Category not found");
+
+			}
+			return tabs;
+		}
+
+		
+	
+			
 
 	}
 }
+
+
 
 
 

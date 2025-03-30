@@ -19,7 +19,7 @@ namespace Sport_Web.Controllers
 		[HttpGet("GetAllCategory")]
 		public async Task<IActionResult> GetAllCategories()
 		{
-			var getAllCategory = await _categoryService.GetAllCategories();
+			var getAllCategory = await _categoryService.GetAllCategoriesAsync();
 
 			if (getAllCategory == null)
 			{
@@ -32,17 +32,18 @@ namespace Sport_Web.Controllers
 		[HttpGet("GetCategory{id}")]
 		public async Task<IActionResult> GetCategory(int id)
 		{
-			var getCategory = await _categoryService.GetCategoryById(id);
+			var getCategory = await _categoryService.GetCategoryByIdAsync(id);
 			if (getCategory == null) return BadRequest("Invalid id");
 			return Ok(getCategory);
 		}
 
-		[HttpGet("ParentCategoryTabs/{parentCategoryId}")]
-		public async Task<IActionResult> GetParentCategoryTabs(int parentCategoryId)
-		{
-			var tabs = await _categoryService.GetParentCategoryTabsAsync(parentCategoryId);	
-			return Ok(tabs);
-		}	
 
+		[HttpGet("GetAllTabs")]
+		public async Task<IActionResult> GetTabsByCategoryId()
+		{
+			var tabs = await _categoryService.GetAllTabsAsync();
+			return Ok(tabs);
+		}
 	}
 }
+

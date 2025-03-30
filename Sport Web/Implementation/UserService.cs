@@ -31,12 +31,12 @@ namespace Sport_Web.Implementation
 			_emailService = emailService;
 		}
 
-		public async Task<AuthResponseDto> RegisterAsync(RegisterDto registerDto)
+		public async Task<ResponseDto> RegisterAsync(RegisterDto registerDto)
 		{
 			var emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
 			if (!Regex.IsMatch(registerDto.Email, emailPattern))
 			{
-				return new AuthResponseDto
+				return new ResponseDto
 				{
 					Message = "Invalid email format.",
 					IsSuccess = false
@@ -45,7 +45,7 @@ namespace Sport_Web.Implementation
 			var usernamePattern = @"^[a-zA-Z0-9]+$";
 			if (!Regex.IsMatch(registerDto.UserName, usernamePattern))
 			{
-				return new AuthResponseDto
+				return new ResponseDto
 				{
 					Message = "Username can only contain alphanumeric characters.",
 					IsSuccess = false
@@ -55,7 +55,7 @@ namespace Sport_Web.Implementation
 			var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == registerDto.Email);
 			if (existingUser != null)
 			{
-				return new AuthResponseDto
+				return new ResponseDto
 				{
 					Message = "User already exists.",
 					IsSuccess = false
@@ -95,25 +95,25 @@ namespace Sport_Web.Implementation
 				isActive = user.IsActive,	
 
 			};
-			return new AuthResponseDto
+			return new ResponseDto
 			{
 				Message = "User registered successfully.",
 				IsSuccess = true
 			};
 		}
 
-		public async Task<AuthResponseDto> LoginAsync(LoginDto loginDto)
+		public async Task<ResponseDto> LoginAsync(LoginDto loginDto)
 		{
 			var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDto.Email);
 			if (user == null || _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, loginDto.Password) != PasswordVerificationResult.Success)
 			{
 
-				return new AuthResponseDto { IsSuccess = false, Message = "User not found." };
+				return new ResponseDto { IsSuccess = false, Message = "User not found." };
 
 			}
 			if (!user.IsActive)
 			{
-				return new AuthResponseDto { IsSuccess = false, Message = "Your account is deactivated. Contact admin." };
+				return new ResponseDto { IsSuccess = false, Message = "Your account is deactivated. Contact admin." };
 
 			}
 
@@ -135,17 +135,17 @@ namespace Sport_Web.Implementation
 
 				await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
 			}
-			return new AuthResponseDto { IsSuccess = true, Message = "Login Successful" };
+			return new ResponseDto { IsSuccess = true, Message = "Login Successful" };
 
 
 		}
 
-		public async Task<AuthResponseDto> RequestPasswordResetAsync(string email)
+		public async Task<ResponseDto> RequestPasswordResetAsync(string email)
 		{
 			var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 			if (user == null)
 			{
-				return new AuthResponseDto
+				return new ResponseDto
 				{
 					Message = "User not found",
 					IsSuccess = false
@@ -159,7 +159,7 @@ namespace Sport_Web.Implementation
 
 			if (existingToken != null)
 			{
-				return new AuthResponseDto
+				return new ResponseDto
 				{
 					Message = "A password reset link is already sent. Please check your email.",
 					IsSuccess = false
@@ -188,7 +188,7 @@ namespace Sport_Web.Implementation
 			await _emailService.SendPasswordResetEmailAsync(resetEmailDto);	
 			
 
-			return new AuthResponseDto
+			return new ResponseDto
 			{
 				Message = "Password reset link has been sent to your email.",
 				IsSuccess = true
@@ -196,11 +196,11 @@ namespace Sport_Web.Implementation
 
 		}
 
-		public async Task<AuthResponseDto> ResetPasswordAsync(ResetPasswordDto resetPasswordDto)
+		public async Task<ResponseDto> ResetPasswordAsync(ResetPasswordDto resetPasswordDto)
 		{
 			if(resetPasswordDto.NewPassword != resetPasswordDto.ConfirmPassword)
 			{
-				return new AuthResponseDto
+				return new ResponseDto
 				{
 					Message = "Password and confirmation password do not match.",
 					IsSuccess = false
@@ -210,7 +210,7 @@ namespace Sport_Web.Implementation
 			var resetToken = await _context.PasswordResetTokens.FirstOrDefaultAsync(t=>t.Token == resetPasswordDto.Token && t.ExpiryDate> DateTime.UtcNow && !t.IsUsed);
 			if (resetToken == null)
 			{
-				return new AuthResponseDto
+				return new ResponseDto
 				{
 					Message = "Invalid or expired token.",
 					IsSuccess = false
@@ -220,7 +220,7 @@ namespace Sport_Web.Implementation
 			var user = await _context.Users.FirstOrDefaultAsync(u=>u.UserId == resetToken.UserId);	
 			if (user == null)
 			{
-				return new AuthResponseDto
+				return new ResponseDto
 				{
 					Message = "User not found.",
 					IsSuccess = false
@@ -230,7 +230,7 @@ namespace Sport_Web.Implementation
 			resetToken.IsUsed = true;	
 			_context.PasswordResetTokens.Update(resetToken);	
 			await _context.SaveChangesAsync();
-			return new AuthResponseDto
+			return new ResponseDto
 			{
 				Message = "Password has been successfully reset.",
 				IsSuccess = true

@@ -12,14 +12,17 @@ namespace Sport_Web.Models
 		public Category ParentCategory { get; set; }
 
 		[JsonIgnore]
-		public ICollection<Category> SubCategories { get; set; } 
+		public ICollection<Category> SubCategories { get; set; }
 
-		public ICollection<Team> Teams { get; set; } 
+		public ICollection<Team> Teams { get; set; }
+		public ICollection<Home> homes  { get; set; }
+
 
 		public string? ImageUrl { get; set; }
 		[JsonIgnore]
-		public ICollection<CategoryTab> CategoryTabs { get; set; }	
+		public ICollection<CategorySection> CategorySections { get; set; }
 
 
 	}
 }
+

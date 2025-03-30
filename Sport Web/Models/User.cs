@@ -10,7 +10,9 @@
 		public bool IsActive { get; set; }
 		public DateTime CreatedAt { get; set; }  
 
-		public ICollection<PasswordResetToken> PasswordResetTokens { get; set; }	
+		public ICollection<PasswordResetToken> PasswordResetTokens { get; set; }
+		public SectionContent SectionContent { get; set; }
+
 
 
 	}

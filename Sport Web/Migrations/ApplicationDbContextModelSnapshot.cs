@@ -47,7 +47,7 @@ namespace Sport_Web.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("Sport_Web.Models.CategoryTab", b =>
+            modelBuilder.Entity("Sport_Web.Models.CategorySection", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -55,7 +55,7 @@ namespace Sport_Web.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("CategoryName")
@@ -74,7 +74,69 @@ namespace Sport_Web.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("CategoryTabs");
+                    b.ToTable("categorySections");
+                });
+
+            modelBuilder.Entity("Sport_Web.Models.Home", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SectionContentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SectionContentId");
+
+                    b.ToTable("Homes");
+                });
+
+            modelBuilder.Entity("Sport_Web.Models.Match", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AwayScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AwayTeamId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HomeScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HomeTeamId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("MatchDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AwayTeamId");
+
+                    b.HasIndex("HomeTeamId");
+
+                    b.ToTable("Matches");
                 });
 
             modelBuilder.Entity("Sport_Web.Models.PasswordResetToken", b =>
@@ -135,7 +197,7 @@ namespace Sport_Web.Migrations
                     b.Property<string>("Position")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TeamId")
+                    b.Property<int?>("TeamId")
                         .HasColumnType("int");
 
                     b.Property<string>("Weight")
@@ -146,6 +208,27 @@ namespace Sport_Web.Migrations
                     b.HasIndex("TeamId");
 
                     b.ToTable("Players");
+                });
+
+            modelBuilder.Entity("Sport_Web.Models.SectionContent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CategorySectionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContentType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategorySectionId");
+
+                    b.ToTable("SectionContents");
                 });
 
             modelBuilder.Entity("Sport_Web.Models.Team", b =>
@@ -199,11 +282,16 @@ namespace Sport_Web.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("SectionContentId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
+
+                    b.HasIndex("SectionContentId");
 
                     b.ToTable("Users");
                 });
@@ -218,15 +306,52 @@ namespace Sport_Web.Migrations
                     b.Navigation("ParentCategory");
                 });
 
-            modelBuilder.Entity("Sport_Web.Models.CategoryTab", b =>
+            modelBuilder.Entity("Sport_Web.Models.CategorySection", b =>
                 {
                     b.HasOne("Sport_Web.Models.Category", "Category")
-                        .WithMany("CategoryTabs")
+                        .WithMany("CategorySections")
                         .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Sport_Web.Models.Home", b =>
+                {
+                    b.HasOne("Sport_Web.Models.Category", "Category")
+                        .WithMany("homes")
+                        .HasForeignKey("SectionContentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Sport_Web.Models.SectionContent", "SectionContent")
+                        .WithMany("HomeContent")
+                        .HasForeignKey("SectionContentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
+
+                    b.Navigation("SectionContent");
+                });
+
+            modelBuilder.Entity("Sport_Web.Models.Match", b =>
+                {
+                    b.HasOne("Sport_Web.Models.Team", "AwayTeam")
+                        .WithMany("AwayMatches")
+                        .HasForeignKey("AwayTeamId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Sport_Web.Models.Team", "HomeTeam")
+                        .WithMany("HomeMatches")
+                        .HasForeignKey("HomeTeamId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AwayTeam");
+
+                    b.Navigation("HomeTeam");
                 });
 
             modelBuilder.Entity("Sport_Web.Models.PasswordResetToken", b =>
@@ -245,10 +370,19 @@ namespace Sport_Web.Migrations
                     b.HasOne("Sport_Web.Models.Team", "Team")
                         .WithMany("Players")
                         .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("Sport_Web.Models.SectionContent", b =>
+                {
+                    b.HasOne("Sport_Web.Models.CategorySection", "CategorySection")
+                        .WithMany("SectionContents")
+                        .HasForeignKey("CategorySectionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CategorySection");
                 });
 
             modelBuilder.Entity("Sport_Web.Models.Team", b =>
@@ -259,20 +393,57 @@ namespace Sport_Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Sport_Web.Models.SectionContent", "SectionContent")
+                        .WithMany("Teams")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Category");
+
+                    b.Navigation("SectionContent");
+                });
+
+            modelBuilder.Entity("Sport_Web.Models.User", b =>
+                {
+                    b.HasOne("Sport_Web.Models.SectionContent", "SectionContent")
+                        .WithMany()
+                        .HasForeignKey("SectionContentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SectionContent");
                 });
 
             modelBuilder.Entity("Sport_Web.Models.Category", b =>
                 {
-                    b.Navigation("CategoryTabs");
+                    b.Navigation("CategorySections");
 
                     b.Navigation("SubCategories");
+
+                    b.Navigation("Teams");
+
+                    b.Navigation("homes");
+                });
+
+            modelBuilder.Entity("Sport_Web.Models.CategorySection", b =>
+                {
+                    b.Navigation("SectionContents");
+                });
+
+            modelBuilder.Entity("Sport_Web.Models.SectionContent", b =>
+                {
+                    b.Navigation("HomeContent");
 
                     b.Navigation("Teams");
                 });
 
             modelBuilder.Entity("Sport_Web.Models.Team", b =>
                 {
+                    b.Navigation("AwayMatches");
+
+                    b.Navigation("HomeMatches");
+
                     b.Navigation("Players");
                 });
 

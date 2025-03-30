@@ -1,8 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Sport_Web.Abstraction;
+using Sport_Web.Data;
 using Sport_Web.DTO;
+using Sport_Web.Implementation;
+using Sport_Web.Models;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Text.Json;
 
 namespace Sport_Web.Controllers
 {
@@ -12,10 +18,11 @@ namespace Sport_Web.Controllers
 	public class CategoryManagementController : ControllerBase
 	{
 		private readonly ICategoryService _categoryService;
-		public CategoryManagementController(ICategoryService categoryService)
+
+		public CategoryManagementController( ICategoryService categoryService)
 		{
 			_categoryService = categoryService;
-
+		
 		}
 		[HttpPost("AddNewCategory")]
 		public async Task<IActionResult> AddCategory([FromBody] CategoryDto categoryDto)
@@ -32,11 +39,11 @@ namespace Sport_Web.Controllers
 
 
 		[HttpPut("UpdateCategory{id}")]
-		public async Task<IActionResult> UpdateCategory(int id,CategoryDto categoryDto)
+		public async Task<IActionResult> UpdateCategory(int id, CategoryDto categoryDto)
 		{
-			var UpdateCategory = await _categoryService.UpdateCategoryAsync(id,	categoryDto);	
+			var UpdateCategory = await _categoryService.UpdateCategoryAsync(id, categoryDto);
 			if (UpdateCategory == null) return NotFound("Invalid Id");
-			return Ok(UpdateCategory);	
+			return Ok(UpdateCategory);
 		}
 
 		[HttpDelete("DeleteCategory{id}")]
@@ -50,7 +57,7 @@ namespace Sport_Web.Controllers
 
 
 		[HttpPost("AddSubCategory")]
-		public async Task<IActionResult> AddSubCategory( AddSubCategoryDto subCategoryDto)
+		public async Task<IActionResult> AddSubCategory(SubCategoryDto subCategoryDto)
 		{
 			var subCategory = await _categoryService.AddSubCategoryAsync(subCategoryDto);
 			if (subCategory == null) return BadRequest();
@@ -63,7 +70,7 @@ namespace Sport_Web.Controllers
 		{
 			var updateSubCategory = await _categoryService.UpdateSubCategoryAsync(id, subCategoryUpdateDto);
 			if (updateSubCategory == null) return NotFound("Invalid Id");
-			return Ok(updateSubCategory);	
+			return Ok(updateSubCategory);
 		}
 
 		[HttpDelete("DeleteSubCategory{id}")]
@@ -71,14 +78,14 @@ namespace Sport_Web.Controllers
 		{
 			var subCategory = await _categoryService.DeleteSubCategoryByIdAsync(id);
 			if (subCategory == null) return NotFound("Incorrect Id");
-			return Ok(subCategory);		
+			return Ok(subCategory);
 
 		}
 
 		[HttpPost("AddTabForCategory")]
-		public async Task<IActionResult> AddSubCategoryNavbar(TabsForCategoryDto tabsForCategoryDto)
+		public async Task<IActionResult> AddTabForCategory(SectionCategoryDto sectionCategoryDto)
 		{
-			var subCategoryItem = await _categoryService.AddTabForCategoryAsync(tabsForCategoryDto);
+			var subCategoryItem = await _categoryService.AddTabForCategoryAsync(sectionCategoryDto);
 			if (subCategoryItem == null)
 			{
 				return BadRequest("Invalid data");
@@ -87,7 +94,23 @@ namespace Sport_Web.Controllers
 		}
 
 
+		//[HttpPost("AddTeam/{tabId}")]
+		//public async Task<IActionResult> AddTabContent(int tabId, TeamDto teamDto)
+		//{
+		//	var result = await _categoryService.AddTabContentAsync(tabId, teamDto);
+
+		//	if (result == null)
+		//	{
+		//		return  NotFound(new { message = "categorytab not found." });
+		//	}
+
+		//	return Ok(result);
+		//}	
+
 	}
 
 }
+
+
+
 
