@@ -1,65 +1,84 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Sport_Web.Abstraction;
-using Sport_Web.Data;
-using Sport_Web.DTO;
+﻿//using Microsoft.AspNetCore.Mvc;
+//using Microsoft.EntityFrameworkCore;
+//using Sport_Web.Abstraction;
+//using Sport_Web.Data;
+//using Sport_Web.DTO;
+//using Sport_Web.Implementation;
+//using Sport_Web.Models;
 
-namespace Sport_Web.Controllers
-{
-	[ApiController]
-	[Route("api/content")]
-	public class ContentController : ControllerBase
-	{
-		private readonly IcontentService _contentService;
-		private readonly ApplicationDbContext _context;
+//namespace Sport_Web.Controllers
+//{
+//	[ApiController]
+//	[Route("api/content")]
+//	public class ContentController : ControllerBase
+//	{
+//		private readonly IcontentService _contentService;
+//		private readonly ApplicationDbContext _context;
 
-		public ContentController(IcontentService contentService, ApplicationDbContext dbContext  )
-		{
-			_contentService = contentService;	
-		}
-		[HttpGet]
-		public async Task<IActionResult>GetAllTeams()
-		{
-			var getAllTeam = await _contentService.GetAllTeamsAsync();
-			return Ok(getAllTeam);	
-		}
+//		public ContentController(IcontentService contentService, ApplicationDbContext dbContext)
+//		{
+//			_contentService = contentService;
+//		}
 
-		[HttpGet("{tabId}")]
-		public async Task<IActionResult> GetTabContent(int tabId)
-		{
-			try
-			{
-				var responseDto = await _contentService.GetTabContentAsync(tabId);
-				return Ok(responseDto);
-			}
-			catch (KeyNotFoundException ex)
-			{
-				return NotFound(ex.Message);
-			}
-		}
+//		//[HttpGet("GetHome/{categoryId}")]
+//		//public async Task<IActionResult> GetHomeByCategory(int categoryId)
+//		//{
+//		//	var response = await _contentService.GetHomeByCategoryIdAsync(categoryId);
+//		//	return Ok(response);
 
+//		//}
 
-		//[HttpGet("{tabId}")]
+//		[HttpGet("GetTeam/{categoryId}")]
+//		public async Task<IActionResult> GetTeamByCategory(int categoryId)
+//		{
+//			var response = await _contentService.GetTeamByCategoryIdAsync(categoryId);
+//			return Ok(response);
 
-		//public async Task<IActionResult> GetTabContentAsync(int categorySectionId)
-		//{
+//		}
 
-		//	var teams = await _context.Teams
-		//		   .Where(t => t.CategoryId == categorySectionId)
-		//		   .ToListAsync();
+//		[HttpGet("GetMatches/{categoryId}")]
+//		public async Task<IActionResult> GetMatchesByCategory(int categoryId)
+//		{
+//			var response = await _contentService.GetMatchesByCategoryId(categoryId);
+//			return Ok(response);
 
-		//	var teamDtos = teams.Select(t => new TeamResponseDto
-		//	{
-		//		//Id = t.Id,
-		//		TeamName = t.Name,
-		//		LogoUrl = t.LogoUrl,
-		//		CategorySectionId = t.CategoryId
-		//	}).ToList();
+//		}
 
 
-		//	return Ok(teamDtos);
+//		[HttpGet("GetNews/{categoryId}")]
+//		public async Task<IActionResult> GetNewsByCategory(int categoryId)
+//		{
+//			var response = await _contentService.GetNewsByCategoryIdAsync(categoryId);
+//			return Ok(response);
 
-	}
+//		}
 
-	}
+
+
+//		[HttpGet("GetPlayer/{teamId}")]
+//		public async Task<ActionResult<List<PlayersResponseDto>>> GetPlayersByTeam(int teamId)
+//		{
+//			var players = await _contentService.GetPlayersByTeamIdAsync(teamId);
+//			return Ok(players);
+//		}
+
+
+
+//		[HttpGet("GetProduct/{teamId}")]
+//		public async Task<ActionResult<List<PlayersResponseDto>>> GetProductByTeam(int teamId)
+//		{
+//			var products = await _contentService.GetProductsByTeamIdAsync(teamId);
+//			return Ok(products);
+//		}
+//	}
+
+//}
+
+
+
+
+
+
+
+
 

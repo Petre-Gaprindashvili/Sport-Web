@@ -11,7 +11,8 @@
 		public DateTime CreatedAt { get; set; }  
 
 		public ICollection<PasswordResetToken> PasswordResetTokens { get; set; }
-		public SectionContent SectionContent { get; set; }
+		public ICollection<Cart> Carts { get; set; }
+
 
 
 

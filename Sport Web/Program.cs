@@ -137,7 +137,14 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<IcontentService, ContentService>();
+builder.Services.AddScoped<IteamsService, TeamServicecs>();
+builder.Services.AddScoped<IMatchesService, MatchesService>();
+builder.Services.AddScoped<INewsService, NewsService>();
+builder.Services.AddScoped<IPlayerService, PlayerService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+
+builder.Services.AddScoped<ICartService, CartService>();
+
 builder.Services.AddScoped<IImageUploadService, ImageUploadService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 

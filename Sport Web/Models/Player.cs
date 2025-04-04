@@ -15,3 +15,4 @@
 		public string? PhotoUrl { get; set; }
 	}
 }
+

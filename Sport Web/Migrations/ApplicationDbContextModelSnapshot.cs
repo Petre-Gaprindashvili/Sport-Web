@@ -22,6 +22,89 @@ namespace Sport_Web.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Sport_Web.Models.Articles", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PublishedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Articles");
+                });
+
+            modelBuilder.Entity("Sport_Web.Models.Cart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastCheckoutTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("Sport_Web.Models.CartItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("CartItems");
+                });
+
             modelBuilder.Entity("Sport_Web.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -77,7 +160,7 @@ namespace Sport_Web.Migrations
                     b.ToTable("categorySections");
                 });
 
-            modelBuilder.Entity("Sport_Web.Models.Home", b =>
+            modelBuilder.Entity("Sport_Web.Models.Delivery", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -85,26 +168,21 @@ namespace Sport_Web.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SectionContentId")
+                    b.Property<int>("CartId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("DeliveryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SectionContentId");
+                    b.HasIndex("CartId")
+                        .IsUnique();
 
-                    b.ToTable("Homes");
+                    b.ToTable("Deliveries");
                 });
 
             modelBuilder.Entity("Sport_Web.Models.Match", b =>
@@ -121,11 +199,17 @@ namespace Sport_Web.Migrations
                     b.Property<int>("AwayTeamId")
                         .HasColumnType("int");
 
+                    b.Property<string>("AwayTeamlogo")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("HomeScore")
                         .HasColumnType("int");
 
                     b.Property<int>("HomeTeamId")
                         .HasColumnType("int");
+
+                    b.Property<string>("HomeTeamlogo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("MatchDate")
                         .HasColumnType("datetime2");
@@ -210,6 +294,45 @@ namespace Sport_Web.Migrations
                     b.ToTable("Players");
                 });
 
+            modelBuilder.Entity("Sport_Web.Models.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Stock")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TeamId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("Products");
+                });
+
             modelBuilder.Entity("Sport_Web.Models.SectionContent", b =>
                 {
                     b.Property<int>("Id")
@@ -218,7 +341,7 @@ namespace Sport_Web.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CategorySectionId")
+                    b.Property<int>("CategorySectionId")
                         .HasColumnType("int");
 
                     b.Property<string>("ContentType")
@@ -282,18 +405,54 @@ namespace Sport_Web.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SectionContentId")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("SectionContentId");
-
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Sport_Web.Models.Articles", b =>
+                {
+                    b.HasOne("Sport_Web.Models.Category", "Category")
+                        .WithMany("articles")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Sport_Web.Models.Cart", b =>
+                {
+                    b.HasOne("Sport_Web.Models.User", "User")
+                        .WithMany("Carts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Sport_Web.Models.CartItem", b =>
+                {
+                    b.HasOne("Sport_Web.Models.Cart", "Cart")
+                        .WithMany("Items")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Sport_Web.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Sport_Web.Models.Category", b =>
@@ -316,23 +475,15 @@ namespace Sport_Web.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Sport_Web.Models.Home", b =>
+            modelBuilder.Entity("Sport_Web.Models.Delivery", b =>
                 {
-                    b.HasOne("Sport_Web.Models.Category", "Category")
-                        .WithMany("homes")
-                        .HasForeignKey("SectionContentId")
+                    b.HasOne("Sport_Web.Models.Cart", "Cart")
+                        .WithOne("Delivery")
+                        .HasForeignKey("Sport_Web.Models.Delivery", "CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Sport_Web.Models.SectionContent", "SectionContent")
-                        .WithMany("HomeContent")
-                        .HasForeignKey("SectionContentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-
-                    b.Navigation("SectionContent");
+                    b.Navigation("Cart");
                 });
 
             modelBuilder.Entity("Sport_Web.Models.Match", b =>
@@ -375,12 +526,22 @@ namespace Sport_Web.Migrations
                     b.Navigation("Team");
                 });
 
+            modelBuilder.Entity("Sport_Web.Models.Product", b =>
+                {
+                    b.HasOne("Sport_Web.Models.Team", "Team")
+                        .WithMany("Products")
+                        .HasForeignKey("TeamId");
+
+                    b.Navigation("Team");
+                });
+
             modelBuilder.Entity("Sport_Web.Models.SectionContent", b =>
                 {
                     b.HasOne("Sport_Web.Models.CategorySection", "CategorySection")
                         .WithMany("SectionContents")
                         .HasForeignKey("CategorySectionId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CategorySection");
                 });
@@ -404,15 +565,12 @@ namespace Sport_Web.Migrations
                     b.Navigation("SectionContent");
                 });
 
-            modelBuilder.Entity("Sport_Web.Models.User", b =>
+            modelBuilder.Entity("Sport_Web.Models.Cart", b =>
                 {
-                    b.HasOne("Sport_Web.Models.SectionContent", "SectionContent")
-                        .WithMany()
-                        .HasForeignKey("SectionContentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.Navigation("Delivery")
                         .IsRequired();
 
-                    b.Navigation("SectionContent");
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("Sport_Web.Models.Category", b =>
@@ -423,7 +581,7 @@ namespace Sport_Web.Migrations
 
                     b.Navigation("Teams");
 
-                    b.Navigation("homes");
+                    b.Navigation("articles");
                 });
 
             modelBuilder.Entity("Sport_Web.Models.CategorySection", b =>
@@ -433,8 +591,6 @@ namespace Sport_Web.Migrations
 
             modelBuilder.Entity("Sport_Web.Models.SectionContent", b =>
                 {
-                    b.Navigation("HomeContent");
-
                     b.Navigation("Teams");
                 });
 
@@ -445,10 +601,14 @@ namespace Sport_Web.Migrations
                     b.Navigation("HomeMatches");
 
                     b.Navigation("Players");
+
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("Sport_Web.Models.User", b =>
                 {
+                    b.Navigation("Carts");
+
                     b.Navigation("PasswordResetTokens");
                 });
 #pragma warning restore 612, 618

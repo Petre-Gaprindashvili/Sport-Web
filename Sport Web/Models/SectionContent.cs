@@ -9,10 +9,14 @@ namespace Sport_Web.Models
 		public string? ContentType { get; set; }
 		public int CategorySectionId { get; set; }
 		public CategorySection CategorySection { get; set; }
-		public ICollection<Home> HomeContent { get; set; }		
-		public  ICollection <Team> Teams { get; set; }
+		//public ICollection<Home> HomeContent { get; set; }
+		public ICollection<Team> Teams { get; set; }
+		//public ICollection<Match> Match { get; set; }	
+		//public ICollection<Articles> Articles { get; set; }
 	}
 }
+
+
 
 
 

@@ -6,30 +6,23 @@ namespace Sport_Web.DTO
 	public class TeamDto 
 	{ 
 		public string TeamName { get; set; }
-		public int CategorySectionId { get; set; }
 		public IFormFile LogoUrl { get; set; }	
+		public int CategorySectionId { get; set; }
 	}
-	public class TeamResponseDto : ContentBase
+	public class TeamResponseDto 
 	{
-		//public int Id { get; set; }
+		public int Id { get; set; }	
 		public string TeamName { get; set; }
-		public string tabname { get; set; }		
 		public string LogoUrl { get; set; }
-		//public int? CategorySectionId { get; set; }
+		public int CategoryId { get; set; }
 
 
-		
+
 	}
 }
 
 
-//public class ContentBase
-//{
-//	public int Id { get; set; }                 
-//	public string SectionName { get; set; }          
-//	public int CategorySectionId { get; set; }
 
-//}
 
 
 

@@ -14,12 +14,16 @@ namespace Sport_Web.Data
 		public DbSet<Category> Categories { get; set; }	
 		public DbSet<CategorySection> categorySections { get; set; }
 		public DbSet<Sport_Web.Models.SectionContent> SectionContents { get; set; }
-
-		public DbSet<Home> Homes { get; set; }
-
+		//public DbSet<Home> Homes { get; set; }
 		public DbSet<Team> Teams { get; set; }
-		public DbSet<Player> Players { get; set; }
 		public DbSet<Match> Matches { get; set; }		
+		public DbSet<Articles> Articles { get; set; }
+		public DbSet<Player> Players { get; set; }
+		public DbSet<Cart> Carts { get; set; }
+		public DbSet<CartItem> CartItems { get; set; }
+		public DbSet<Delivery> Deliveries { get; set; }
+
+		public DbSet<Product> Products { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -44,11 +48,11 @@ namespace Sport_Web.Data
 	   .WithOne(t => t.Category)
 	   .HasForeignKey(t => t.CategoryId)
 	   .OnDelete(DeleteBehavior.Cascade);
-			modelBuilder.Entity<Category>()
-   .HasMany(c => c.homes)
-   .WithOne(t => t.Category)
-   .HasForeignKey(t => t.SectionContentId)
-   .OnDelete(DeleteBehavior.Cascade);
+			//modelBuilder.Entity<Category>()
+   //.HasMany(c => c.homes)
+   //.WithOne(t => t.Category)
+   //.HasForeignKey(t => t.SectionContentId)
+   //.OnDelete(DeleteBehavior.Cascade);
 
 			modelBuilder.Entity<Team>()
 		.HasMany(t => t.Players)
@@ -74,24 +78,29 @@ namespace Sport_Web.Data
 		//	modelBuilder.Entity<Sport_Web.Models.SectionContent>()
 		//.HasKey(tc => tc.Id);  // Primary key
 
-			modelBuilder.Entity<Sport_Web.Models.SectionContent>()
-				.HasOne(tc => tc.CategorySection)
-				.WithMany(ct => ct.SectionContents)
-				.HasForeignKey(tc => tc.CategorySectionId)
-				.OnDelete(DeleteBehavior.Restrict);
+			//modelBuilder.Entity<Sport_Web.Models.SectionContent>()
+			//	.HasOne(tc => tc.CategorySection)
+			//	.WithMany(ct => ct.SectionContents)
+			//	.HasForeignKey(tc => tc.CategorySectionId)
+			//	.OnDelete(DeleteBehavior.Restrict);
 
 		
-			modelBuilder.Entity<Home>()
-		.HasOne(t => t.SectionContent)  
-		.WithMany(sc => sc.HomeContent)  
-		.HasForeignKey(t => t.SectionContentId)  
-		.OnDelete(DeleteBehavior.Cascade);
+		//	modelBuilder.Entity<Home>()
+		//.HasOne(t => t.SectionContent)  
+		//.WithMany(sc => sc.HomeContent)  
+		//.HasForeignKey(t => t.SectionContentId)  
+		//.OnDelete(DeleteBehavior.Cascade);
 
 			modelBuilder.Entity<Team>()
-	.HasOne(t => t.SectionContent)  
-	.WithMany(sc => sc.Teams) 
-	.HasForeignKey(t => t.CategoryId) 
+	.HasOne(t => t.SectionContent)
+	.WithMany(sc => sc.Teams)
+	.HasForeignKey(t => t.CategoryId)
 	.OnDelete(DeleteBehavior.Cascade);
+//			modelBuilder.Entity<Articles>()
+//.HasOne(t => t.SectionContent)
+//.WithMany(sc => sc.Articles)
+//.HasForeignKey(t => t.CategoryId)
+//.OnDelete(DeleteBehavior.Cascade);
 
 
 			modelBuilder.Entity<Match>()
@@ -106,8 +115,44 @@ namespace Sport_Web.Data
 				.HasForeignKey(m => m.AwayTeamId)
 				.OnDelete(DeleteBehavior.Restrict);
 
+			modelBuilder.Entity<User>()
+		   .HasMany(u => u.Carts)
+		   .WithOne(c => c.User)
+		   .HasForeignKey(c => c.UserId);
+			
 
 
+			modelBuilder.Entity<Cart>()
+	       .HasMany(c => c.Items)
+	       .WithOne(ci => ci.Cart)
+	       .HasForeignKey(ci => ci.CartId);
+
+
+			// ✅ **CartItem & Cart (Many-to-One)**
+			modelBuilder.Entity<CartItem>()
+	 .HasOne(ci => ci.Product)
+	 .WithMany()
+	 .HasForeignKey(ci => ci.ProductId);
+
+			// Cart -> Delivery (One-to-One)
+			modelBuilder.Entity<Cart>()
+				.HasOne(c => c.Delivery)
+				.WithOne(d => d.Cart)
+				.HasForeignKey<Delivery>(d => d.CartId);
+
+			// Product -> Team (Many-to-One)
+			modelBuilder.Entity<Product>()
+				.HasOne(p => p.Team)
+				.WithMany(t => t.Products)
+				.HasForeignKey(p => p.TeamId);
+
+
+			//modelBuilder.Entity<Articles>()
+			//	  .HasOne(n => n.Category)
+			//	  .WithMany()
+			//	  .HasForeignKey(n => n.CategoryId)
+			//	  .OnDelete(DeleteBehavior.Cascade);
 		}
 	}
 }
+

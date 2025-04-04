@@ -162,6 +162,8 @@ namespace Sport_Web.Implementation
 		}
 
 
+
+
 		public async Task<SubCategoryResponseDto> UpdateSubCategoryAsync(int id, SubCategoryUpdateDto subCategoryUpdateDto)
 		{
 			var subCategory = await _context.Categories.Where(c => c.Id == id).FirstOrDefaultAsync();
@@ -227,7 +229,7 @@ namespace Sport_Web.Implementation
 			};
 
 			_context.SectionContents.Add(sectionContent);
-			await  _context.SaveChangesAsync();	
+			await _context.SaveChangesAsync();
 
 			return new SectionCategortResponseDto
 			{
@@ -236,6 +238,7 @@ namespace Sport_Web.Implementation
 				CategoryId = categoryTab.CategoryId,
 			
 			};
+
 
 		}
 
