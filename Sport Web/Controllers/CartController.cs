@@ -5,13 +5,13 @@ using Sport_Web.DTO;
 namespace Sport_Web.Controllers
 {
 	[ApiController]
-	[Route("api/cart")]
+	[Route("api/carts")]
 	public class CartController : Controller
 	{
 		private readonly ICartService _cartService;	
 		public CartController(ICartService cartService)
 		{
-			_cartService = cartService;	
+			_cartService = cartService;
 		}
 
 		[HttpGet("GetCart{userId}")]
@@ -22,7 +22,7 @@ namespace Sport_Web.Controllers
 		}
 
 		[HttpPost("addTocart")]
-		public async Task<IActionResult> AddToCart(CartDto cartDto)
+		public async Task<IActionResult> AddToCart([FromBody] CartDto cartDto)
 		{
 			var cart = await _cartService.AddToCartAsync(cartDto);
 
@@ -30,9 +30,9 @@ namespace Sport_Web.Controllers
 		}
 
 		[HttpPut("updateCart")]
-		public async Task<IActionResult> UpdateCart( int userId,  int productId,  int newQuantity)
+		public async Task<IActionResult> UpdateCart( UpdateCartDto updateCartDto)
 		{
-			var updatedCart = await _cartService.UpdateCartAsync(userId, productId, newQuantity);
+			var updatedCart = await _cartService.UpdateCartAsync(updateCartDto);
 			return Ok(updatedCart);	
 		}
 

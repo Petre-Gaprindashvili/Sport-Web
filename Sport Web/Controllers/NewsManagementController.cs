@@ -1,10 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Sport_Web.Abstraction;
 using Sport_Web.DTO;
 using Sport_Web.Implementation;
 
 namespace Sport_Web.Controllers
 {
+	[ApiController]
+	[Route("api/admin/news")]
+	[Authorize(Roles = "Admin")]
+
 	public class NewsManagementController : Controller
 	{
 

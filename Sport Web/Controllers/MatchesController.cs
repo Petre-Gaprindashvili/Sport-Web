@@ -5,6 +5,8 @@ using Sport_Web.Implementation;
 
 namespace Sport_Web.Controllers
 {
+	[ApiController]
+	[Route("api/matches")]
 	public class MatchesController : ControllerBase
 	{
 
@@ -21,6 +23,14 @@ namespace Sport_Web.Controllers
 		public async Task<IActionResult> GetMatchesByCategory(int categoryId)
 		{
 			var response = await _matchesService.GetMatchesByCategoryId(categoryId);
+			return Ok(response);
+
+		}
+
+		[HttpGet("GetMatchesByTeam/{teamId}")]
+		public async Task<IActionResult> GetMatchesByTeam(int teamId)
+		{
+			var response = await _matchesService.GetMatchesByTeamId(teamId);
 			return Ok(response);
 
 		}

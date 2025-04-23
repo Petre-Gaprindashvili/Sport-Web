@@ -82,16 +82,34 @@ namespace Sport_Web.Controllers
 
 		}
 
-		[HttpPost("AddTabForCategory")]
+		[HttpPost("AddSection")]
 		public async Task<IActionResult> AddTabForCategory(SectionCategoryDto sectionCategoryDto)
 		{
-			var subCategoryItem = await _categoryService.AddTabForCategoryAsync(sectionCategoryDto);
+			var subCategoryItem = await _categoryService.AddSectionAsync(sectionCategoryDto);
 			if (subCategoryItem == null)
 			{
 				return BadRequest("Invalid data");
 			}
 			return Ok(subCategoryItem);
 		}
+
+
+		[HttpPut("UpdateSection{id}")]
+		public async Task<IActionResult> UpdateSection(int id, SectionCategoryDto sectionCategoryDto)
+		{
+			var updateSection = await _categoryService.UpdateSectionAsync(id, sectionCategoryDto);
+			return Ok(updateSection);
+		}
+
+
+		[HttpDelete("DeleteSecton{id}")]
+		public async Task<IActionResult> DeleteSection(int id)
+		{
+			var section = await _categoryService.DeleteSectionAsync(id);
+			return Ok(section);
+
+		}
+
 
 
 		//[HttpPost("AddTeam/{tabId}")]

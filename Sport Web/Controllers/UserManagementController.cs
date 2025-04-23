@@ -6,7 +6,7 @@ namespace Sport_Web.Controllers
 {
 	[ApiController]
 	[Route("api/admin/users")]
-	[Authorize(Roles = "Admin")]
+	////[Authorize(Roles = "Admin")]
 	public class UserManagementController : Controller
 	{
 		private readonly IUserService _userService;
@@ -33,13 +33,13 @@ namespace Sport_Web.Controllers
 		}
 
 
-		[HttpPost("request-password-reset")]
-		public async Task<IActionResult> RequestPasswordReset(string email)
-		{
-			var result = await _userService.RequestPasswordResetAsync(email);	
-			if (result == null) return NotFound("User not found");	
-			return Ok(result);	
-		}
+		//[HttpPost("request-password-reset")]
+		//public async Task<IActionResult> RequestPasswordReset(string email)
+		//{
+		//	var result = await _userService.RequestPasswordResetAsync(email);
+		//	if (result == null) return NotFound("User not found");
+		//	return Ok(result);
+		//}
 
 		[HttpPut("update-role/{id}")]	
 		public async Task<IActionResult> UpdateUserRole(int id,  string newRole)

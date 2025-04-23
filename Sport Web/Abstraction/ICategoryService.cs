@@ -6,8 +6,9 @@ namespace Sport_Web.Abstraction
 	public interface ICategoryService
 	{
 		Task<List<CategoryResponseDto>> GetAllCategoriesAsync();
-		Task<CategoryWithSubCategoriesDto> GetCategoryByIdAsync(int id);
-		Task< List<SectionCategortResponseDto>> GetAllTabsAsync();
+		Task<CategoryWithSubCategoriesDto> GetAllSubCategoryAsync(int id);
+		Task<SubCategoryResponseDto> GetSingleSubcategoryByIdAsync(int id);	
+		Task< List<SectionCategortResponseDto>> GetAllTabsAsync(int categoryId);
 		
 		//Task<List<TeamDto>> GetAllTeamsAsync();
 
@@ -19,7 +20,10 @@ namespace Sport_Web.Abstraction
 		Task<SubCategoryResponseDto> AddSubCategoryAsync(SubCategoryDto subCategoryDto);
 		Task<SubCategoryResponseDto> UpdateSubCategoryAsync(int id, SubCategoryUpdateDto subCategoryUpdate);
 		Task<bool> DeleteSubCategoryByIdAsync(int id);	
-		Task<SectionCategortResponseDto> AddTabForCategoryAsync(SectionCategoryDto sectionCategoryDto);
+		Task<SectionCategortResponseDto> AddSectionAsync(SectionCategoryDto sectionCategoryDto);
+		Task<SectionCategortResponseDto> UpdateSectionAsync(int id, SectionCategoryDto sectionCategoryDto);
+		Task<bool> DeleteSectionAsync(int id);
+
 		//Task<TeamResponseDto> AddTeamAsync();
 
 

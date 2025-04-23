@@ -35,9 +35,24 @@ namespace Sport_Web.DTO
 		public string Password { get; set; }
 	}
 
+	public class AuthResponseDto
+	{
+		public string Message { get; set; }
+		public bool IsSuccess { get; set; }
+		public string Role { get; set; }
+		public int UserId { get; set; }	
+
+	}
+
 	public class PasswordResetEmailDto
 	{
 		public string ToEmail { get; set; }
 		public string ResetToken { get; set; }
 	}
+
+	public class PasswordResetRequest
+	{
+		public string Email { get; set; }
+	}
+
 }

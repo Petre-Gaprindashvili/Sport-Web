@@ -1,9 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Sport_Web.Abstraction;
 using Sport_Web.DTO;
 
 namespace Sport_Web.Controllers
 {
+	[ApiController]
+	[Route("api/admin/players")]
+	[Authorize(Roles = "Admin")]
+
 	public class PlayerManagementController : ControllerBase
 	{
 		private readonly IPlayerService _playerService;

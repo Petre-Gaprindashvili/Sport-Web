@@ -24,8 +24,8 @@ namespace Sport_Web.Implementation
 			mail.From = new MailAddress(SmtpUser);
 			mail.To.Add(resetEmailDto.ToEmail);
 			mail.Subject = "Your Verification Token";
-			var tokenUrl = $"https://localhost:7284/swagger/index.html/{resetEmailDto.ResetToken}";
-			mail.Body = $"Your verification token is: Click here to verify: {tokenUrl}";
+			var tokenUrl = $"http://localhost:51136/reset-password?token={resetEmailDto.ResetToken}";
+			mail.Body = $"To reset your password, click the link below: {tokenUrl}";
 
 
 

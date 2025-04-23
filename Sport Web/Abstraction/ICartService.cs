@@ -8,7 +8,7 @@ namespace Sport_Web.Abstraction
 	{
 		Task<CartResponseDto> GetCartByUserIdAsync(int userId);
 		Task<CartResponseDto> AddToCartAsync(CartDto cartDto);
-		Task<CartResponseDto> UpdateCartAsync(int userId, int productId, int newQuantity);
+		Task<CartResponseDto> UpdateCartAsync(UpdateCartDto updateCartDto);
 		Task<bool> RemoveFromCartAsync(int cartItemId);
 		Task<bool> CheckoutAsync(int userId);
 

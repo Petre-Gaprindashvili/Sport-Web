@@ -16,7 +16,7 @@ namespace Sport_Web.Models
 
 		public ICollection<Team> Teams { get; set; }
 		//public ICollection<Home> homes  { get; set; }
-		public ICollection<Articles> articles { get; set; }
+		public ICollection<News>  News{ get; set; }
 
 
 		public string? ImageUrl { get; set; }

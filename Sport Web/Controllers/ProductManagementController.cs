@@ -1,10 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Sport_Web.Abstraction;
 using Sport_Web.DTO;
 using Sport_Web.Implementation;
 
 namespace Sport_Web.Controllers
 {
+	[ApiController]
+	[Route("api/admin/products")]
+	[Authorize(Roles = "Admin")]
+
 	public class ProductManagementController : ControllerBase
 	{
 
@@ -16,7 +21,7 @@ namespace Sport_Web.Controllers
 		}
 
 		[HttpPost("AddProduct")]
-		public async Task<IActionResult> AddProduct(ProductDtocs productDtocs)
+		public async Task<IActionResult> AddProduct([FromBody] ProductDtocs productDtocs)
 		{
 			var players = await _productService.AddProductAsync(productDtocs);
 			return Ok(players);

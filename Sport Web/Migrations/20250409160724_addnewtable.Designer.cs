@@ -12,8 +12,8 @@ using Sport_Web.Data;
 namespace Sport_Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250403185816_deletehometable")]
-    partial class deletehometable
+    [Migration("20250409160724_addnewtable")]
+    partial class addnewtable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,13 +47,16 @@ namespace Sport_Web.Migrations
                     b.Property<DateTime>("PublishedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("SectionContentId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("SectionContentId");
 
                     b.ToTable("Articles");
                 });
@@ -68,6 +71,9 @@ namespace Sport_Web.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastCheckoutTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -193,7 +199,7 @@ namespace Sport_Web.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AwayScore")
+                    b.Property<int?>("AwayScore")
                         .HasColumnType("int");
 
                     b.Property<int>("AwayTeamId")
@@ -202,7 +208,7 @@ namespace Sport_Web.Migrations
                     b.Property<string>("AwayTeamlogo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("HomeScore")
+                    b.Property<int?>("HomeScore")
                         .HasColumnType("int");
 
                     b.Property<int>("HomeTeamId")
@@ -221,6 +227,39 @@ namespace Sport_Web.Migrations
                     b.HasIndex("HomeTeamId");
 
                     b.ToTable("Matches");
+                });
+
+            modelBuilder.Entity("Sport_Web.Models.News", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PublishedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("News");
                 });
 
             modelBuilder.Entity("Sport_Web.Models.PasswordResetToken", b =>
@@ -416,13 +455,13 @@ namespace Sport_Web.Migrations
 
             modelBuilder.Entity("Sport_Web.Models.Articles", b =>
                 {
-                    b.HasOne("Sport_Web.Models.Category", "Category")
-                        .WithMany("articles")
-                        .HasForeignKey("CategoryId")
+                    b.HasOne("Sport_Web.Models.SectionContent", "SectionContent")
+                        .WithMany()
+                        .HasForeignKey("SectionContentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Category");
+                    b.Navigation("SectionContent");
                 });
 
             modelBuilder.Entity("Sport_Web.Models.Cart", b =>
@@ -505,6 +544,25 @@ namespace Sport_Web.Migrations
                     b.Navigation("HomeTeam");
                 });
 
+            modelBuilder.Entity("Sport_Web.Models.News", b =>
+                {
+                    b.HasOne("Sport_Web.Models.Category", "Category")
+                        .WithMany("News")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Sport_Web.Models.SectionContent", "SectionContent")
+                        .WithMany("News")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("SectionContent");
+                });
+
             modelBuilder.Entity("Sport_Web.Models.PasswordResetToken", b =>
                 {
                     b.HasOne("Sport_Web.Models.User", "User")
@@ -577,11 +635,11 @@ namespace Sport_Web.Migrations
                 {
                     b.Navigation("CategorySections");
 
+                    b.Navigation("News");
+
                     b.Navigation("SubCategories");
 
                     b.Navigation("Teams");
-
-                    b.Navigation("articles");
                 });
 
             modelBuilder.Entity("Sport_Web.Models.CategorySection", b =>
@@ -591,6 +649,8 @@ namespace Sport_Web.Migrations
 
             modelBuilder.Entity("Sport_Web.Models.SectionContent", b =>
                 {
+                    b.Navigation("News");
+
                     b.Navigation("Teams");
                 });
 

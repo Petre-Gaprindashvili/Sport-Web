@@ -10,7 +10,7 @@
 		public string? Height { get; set; }
 		public string? Weight { get; set; }
 		public string? Country { get; set; }
-		public IFormFile? PhotoUrl { get; set; }
+		public string PhotoUrl { get; set; }
 	}
 
 	public class PlayersResponseDto

@@ -3,6 +3,8 @@ using Sport_Web.Implementation;
 using Sport_Web.Abstraction;
 using Sport_Web.DTO;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Sport_Web.Controllers
 {
@@ -18,7 +20,7 @@ namespace Sport_Web.Controllers
 		}
 
 		[HttpPost("register")]
-		public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+		public async Task<IActionResult> Register( RegisterDto registerDto)
 		{
 			var user = await _authenticationService.RegisterAsync(registerDto);	
 			if (user == null) return NotFound();
@@ -40,9 +42,9 @@ namespace Sport_Web.Controllers
 		}
 
 		[HttpPost("password-reset/request")]
-		public async Task<IActionResult> RequestPasswordReset([FromBody] string email)
+		public async Task<IActionResult> RequestPasswordReset( PasswordResetRequest passwordResetRequest)
 		{
-			var response = await _authenticationService.RequestPasswordResetAsync(email);
+			var response = await _authenticationService.RequestPasswordResetAsync(passwordResetRequest);
 			if (response == null)
 			{
 				return BadRequest("Incorrect Email");
@@ -52,10 +54,10 @@ namespace Sport_Web.Controllers
 		}
 
 		[HttpPost("reset-password")]
-		public async Task<IActionResult> ResetPasswordAsync([FromBody] ResetPasswordDto resetPasswordDto)
+		public async Task<IActionResult> ResetPasswordAsync( [FromQuery,] string token, ResetPasswordDto resetPasswordDto)
 		{
 
-			var response =  await _authenticationService.ResetPasswordAsync(resetPasswordDto);
+			var response =  await _authenticationService.ResetPasswordAsync(token, resetPasswordDto);
 			if (response == null)
 			{
 				return BadRequest("Invalid Request");
@@ -63,6 +65,7 @@ namespace Sport_Web.Controllers
 			return Ok(response);	
 
 		}
+		
 
 
 	}

@@ -49,7 +49,7 @@ namespace Sport_Web.Implementation
 				};
 
 			}
-			var photoUrl = await _imageUploadService.UploadImageAsync(playerDto.PhotoUrl);
+			var photoUrl = playerDto.PhotoUrl;
 			var player = new Player
 			{
 				Name = playerDto.Name,
@@ -115,7 +115,7 @@ namespace Sport_Web.Implementation
 
 			string updatedPhotoUrl = player.PhotoUrl;
 
-			updatedPhotoUrl = await _imageUploadService.UploadImageAsync(playerDto.PhotoUrl);
+			updatedPhotoUrl = playerDto.PhotoUrl;
 
 
 			player.Name = playerDto.Name;

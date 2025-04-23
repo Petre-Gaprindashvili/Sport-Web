@@ -37,51 +37,6 @@ namespace Sport_Web.Implementation
 			return products;
 		}
 
-
-		public async Task<ProductResponseDtocs> AddProductAsync(ProductDtocs productDto)
-		{
-			var teamExists = await _context.Teams.FirstOrDefaultAsync(t => t.Id == productDto.TeamId);
-			if (teamExists == null)
-			{
-				var response = new ResponseDto
-				{
-					IsSuccess = false,
-					Message = "Invalid Id"
-				};
-			}
-
-			var photoUrl = await _imageUploadService.UploadImageAsync(productDto.ImageUrl);
-
-			var product = new Product
-			{
-				Name = productDto.Name,
-				Price = productDto.Price,
-				Description = productDto.Description,
-				ImageUrl = photoUrl,
-				Stock = productDto.Stock,
-				IsAvailable = productDto.IsAvailable,
-				TeamId = productDto.TeamId,
-
-			};
-			_context.Products.Add(product);
-			await _context.SaveChangesAsync();
-
-			return new ProductResponseDtocs
-			{
-				Id = product.Id,
-				Name = product.Name,
-				Price = product.Price,
-				Description = product.Description,
-				ImageUrl = product.ImageUrl,
-				Stock = product.Stock,
-				IsAvailable = product.IsAvailable,
-				TeamId = product.TeamId,
-			};
-
-		}
-
-
-
 		public async Task<ProductResponseDtocs> GetProductByIdAsync(int productId)
 		{
 			var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
@@ -105,9 +60,56 @@ namespace Sport_Web.Implementation
 				ImageUrl = product.ImageUrl,
 				Stock = product.Stock,
 				IsAvailable = product.IsAvailable,
+				Quantity = product.Quantity??0,	
 				TeamId = product.TeamId,
 			};
 		}
+
+
+		public async Task<ProductResponseDtocs> AddProductAsync(ProductDtocs productDto)
+		{
+			var teamExists = await _context.Teams.FirstOrDefaultAsync(t => t.Id == productDto.TeamId);
+			if (teamExists == null)
+			{
+				var response = new ResponseDto
+				{
+					IsSuccess = false,
+					Message = "Invalid Id"
+				};
+			}
+
+			var photoUrl = (productDto.ImageUrl);
+
+			var product = new Product
+			{
+				Name = productDto.Name,
+				Price = productDto.Price,
+				Description = productDto.Description,
+				ImageUrl = photoUrl,
+				Stock = productDto.Stock,
+				IsAvailable = productDto.IsAvailable,
+				TeamId = productDto.TeamId,
+				Quantity = productDto.Quantity,	
+
+			};
+			_context.Products.Add(product);
+			await _context.SaveChangesAsync();
+
+			return new ProductResponseDtocs
+			{
+				Id = product.Id,
+				Name = product.Name,
+				Price = product.Price,
+				Description = product.Description,
+				ImageUrl = product.ImageUrl,
+				Stock = product.Stock,
+				IsAvailable = product.IsAvailable,
+				TeamId = product.TeamId,
+				Quantity = product.Quantity ?? 0	,	
+			};
+
+		}
+
 
 		public async Task<ProductResponseDtocs> UpdateProductAsync(int productId, ProductDtocs productDto)
 		{
@@ -119,7 +121,7 @@ namespace Sport_Web.Implementation
 
 			string updatedPhotoUrl = product.ImageUrl;
 
-			updatedPhotoUrl = await _imageUploadService.UploadImageAsync(productDto.ImageUrl);
+			updatedPhotoUrl =productDto.ImageUrl;
 
 
 			product.Name = productDto.Name;

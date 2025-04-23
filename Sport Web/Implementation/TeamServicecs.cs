@@ -17,7 +17,7 @@ namespace Sport_Web.Implementation
 			_imageUploadService = imageUploadService;
 		}
 
-		public async Task<List<TeamResponseDto>> GetTeamByCategoryIdAsync(int categoryId)
+		public async Task<List<TeamResponseDto>> GetAllTeamByCategoryIdAsync(int categoryId)
 		{
 
 			var teams = await _context.Teams
@@ -35,20 +35,36 @@ namespace Sport_Web.Implementation
 			return teams;
 		}
 
+		public async Task<TeamResponseDto> GetSingleTeamByIdAsync(int id)
+		{
+			var team = await _context.Teams.Where(t => t.Id == id).
+				Select(t => new TeamResponseDto
+				{
+					Id = t.Id,
+					TeamName = t.Name,
+					LogoUrl = t.LogoUrl,
+					CategoryId = t.CategoryId,
+
+				}).FirstOrDefaultAsync();
+
+			return team;
+		}
+
+
 
 		public async Task<TeamResponseDto> AddTeamAsync(TeamDto teamDto)
 		{
-			var sectionContent = await _context.SectionContents
-			.FirstOrDefaultAsync(c => c.Id == teamDto.CategorySectionId);
+			var sectionContent = await _context.categorySections
+			.FirstOrDefaultAsync(c => c.CategoryId == teamDto.CategoryId);
 			if (sectionContent == null) return null;
 
-			string imageUrl = await _imageUploadService.UploadImageAsync(teamDto.LogoUrl);
+			string imageUrl = teamDto.LogoUrl;	
 
 			var team = new Team
 			{
 
 				Name = teamDto.TeamName,
-				CategoryId = sectionContent.Id,
+				CategoryId = sectionContent.CategoryId,
 				LogoUrl = imageUrl,
 			};
 			_context.Teams.Add(team);

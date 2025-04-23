@@ -5,6 +5,8 @@ using Sport_Web.Implementation;
 
 namespace Sport_Web.Controllers
 {
+	[ApiController]
+	[Route("api/products")]
 	public class ProductController : ControllerBase
 	{
 
@@ -16,13 +18,22 @@ namespace Sport_Web.Controllers
 			_productService = productService;	
 		}
 
-		[HttpGet("GetProduct/{teamId}")]
-		public async Task<ActionResult<List<PlayersResponseDto>>> GetProductByTeam(int teamId)
+		[HttpGet("GetProductByTeam/{teamId}")]
+		public async Task<ActionResult<List<ProductResponseDtocs>>> GetProductByTeam(int teamId)
 		{
 			var products = await _productService.GetProductsByTeamIdAsync(teamId);
 			return Ok(products);
 		}
+
+		[HttpGet("GetProduct/{id}")]
+		public async Task<ProductResponseDtocs> GetProductById(int id)
+		{
+			var product = await _productService.GetProductByIdAsync(id);
+			return product;
 	}
+
+
+}
 }
 
 

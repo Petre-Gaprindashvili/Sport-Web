@@ -5,10 +5,10 @@ namespace Sport_Web.Abstraction
 {
 	public interface IUserService
 	{
-		Task<ResponseDto> RegisterAsync(RegisterDto registerDto);
-		Task<ResponseDto> LoginAsync(LoginDto loginDto);
-		Task<ResponseDto> RequestPasswordResetAsync(string email);
-		Task<ResponseDto> ResetPasswordAsync(ResetPasswordDto resetPasswordDto);
+		Task<AuthResponseDto> RegisterAsync(RegisterDto registerDto);
+		Task<AuthResponseDto> LoginAsync(LoginDto loginDto);
+		Task<ResponseDto> RequestPasswordResetAsync( PasswordResetRequest passwordResetRequest);
+		Task<ResponseDto> ResetPasswordAsync(string token, ResetPasswordDto resetPasswordDto);
 
 		// Admin-specific methods:
 		Task<List<UserDto>> GetAllUsersAsync();

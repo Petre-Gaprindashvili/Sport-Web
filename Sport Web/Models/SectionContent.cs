@@ -1,20 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc.ActionConstraints;
+﻿//using Microsoft.AspNetCore.Mvc.ActionConstraints;
 
-namespace Sport_Web.Models
-{
-	public class SectionContent
-	{
+//namespace Sport_Web.Models
+//{
+//	public class SectionContent
+//	{
 
-		public int Id { get; set; }
-		public string? ContentType { get; set; }
-		public int CategorySectionId { get; set; }
-		public CategorySection CategorySection { get; set; }
-		//public ICollection<Home> HomeContent { get; set; }
-		public ICollection<Team> Teams { get; set; }
-		//public ICollection<Match> Match { get; set; }	
-		//public ICollection<Articles> Articles { get; set; }
-	}
-}
+//		public int Id { get; set; }
+//		public string? ContentType { get; set; }
+//	    public int CategorySectionId { get; set; }
+//		public CategorySection CategorySection { get; set; }
+//		//public ICollection<Home> HomeContent { get; set; }
+//		public ICollection<Team> Teams { get; set; }
+//		//public ICollection<Match> Match { get; set; }	
+//		public ICollection<News>  News { get; set; }
+//	}
+//}
 
 
 

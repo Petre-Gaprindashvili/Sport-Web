@@ -10,11 +10,19 @@ namespace Sport_Web.DTO
 		public int Quantity { get; set; }
 	}
 
+	public class UpdateCartDto
+	{
+		public int UserId { get; set; }
+		public int ProductId { get; set; }
+		public int NewQuantity { get; set; }
+	}
+
+
+
 	public class CartResponseDto
 	{
 		public int Id { get; set; }	
-		public bool IsSuccess { get; set; }
-		public string Message { get; set; }
+
 		public int CartId { get; set; }
 		public int UserId { get; set; }
 		public bool IsActive { get; set; }	
@@ -25,6 +33,7 @@ namespace Sport_Web.DTO
 	public class CartItemDto
 	{
 		public int ProductId { get; set; }
+		public string imgUrl { get; set; }	
 		public string ProductName { get; set; }
 		public int Quantity { get; set; }
 		public decimal Price { get; set; }

@@ -22,29 +22,38 @@ namespace Sport_Web.Implementation
 		public async Task<CartResponseDto> GetCartByUserIdAsync(int userId)
 		{
 			var cart = await _context.Carts
-				.Where(c => c.UserId == userId)
+				.Where(c => c.UserId == userId && c.IsActive)
 				.Include(c => c.Items)
 				.ThenInclude(ci => ci.Product)
 				.FirstOrDefaultAsync();
 
 			if (cart == null)
 			{
-				return new CartResponseDto
-				{
-					IsSuccess = false,
-					Message = "Cart not found."
-				};
+			  return new CartResponseDto
+			  {
+				  Id = 0,
+				  CartId = 0,
+				  UserId = userId,
+				  IsActive = false,
+				  Items = new List<CartItemDto>(), // Empty cart items
+				  TotalAmount = 0,
+				  //Message = "Your cart is empty."
+			  };
+
+				
 			}
 
 			return new CartResponseDto
 			{
-				IsSuccess = true,
-				Message = "Cart retrieved successfully.",
+			
+				Id = cart.Id,
 				CartId = cart.Id,
-				UserId = cart.UserId,				
+				UserId = cart.UserId,	
+				IsActive = cart.IsActive,	
 				Items = cart.Items.Select(ci => new CartItemDto
 				{
 					ProductId = ci.ProductId,
+					imgUrl = ci.Product.ImageUrl,
 					ProductName = ci.Product.Name,
 					Quantity = ci.Quantity,
 					Price = ci.Product.Price,
@@ -56,74 +65,78 @@ namespace Sport_Web.Implementation
 
 		public async Task<CartResponseDto> AddToCartAsync(CartDto addToCartDto)
 		{
+			// Check if the user already has an active cart
 			var userCart = await _context.Carts
-				.Where(c => c.UserId == addToCartDto.UserId)
+				.Where(c => c.UserId == addToCartDto.UserId && c.IsActive) // Get only active cart
+				.Include(c => c.Items)
 				.FirstOrDefaultAsync();
 
-			// Check if the user is in cooldown period
-			if (userCart != null && userCart.LastCheckoutTime.HasValue)
+			// If no active cart exists, create a new one
+			if (userCart == null)
 			{
-				var cooldownTimeSpan = DateTime.UtcNow - userCart.LastCheckoutTime.Value;
-				var cooldownPeriod = TimeSpan.FromMinutes(30); // Example cooldown period (30 minutes)
-
-				if (cooldownTimeSpan < cooldownPeriod)
+				userCart = new Cart
 				{
-					return new CartResponseDto
-					{
-						IsSuccess = false,
-						Message = "You cannot add items to the cart right now. Please wait for the cooldown period to end."
-					};
-				}
+					UserId = addToCartDto.UserId,
+					IsActive = true,  // The new cart will be active
+					LastCheckoutTime = null  // Reset LastCheckoutTime for the new cart
+				};
+
+				_context.Carts.Add(userCart);
+				await _context.SaveChangesAsync(); // Save to generate CartId
 			}
 
-			// Proceed with adding items to the cart as normal
+			// Check if the product exists in the database
 			var product = await _context.Products.FindAsync(addToCartDto.ProductId);
-
 			if (product == null)
-				return new CartResponseDto { IsSuccess = false, Message = "Product not found." };
-
-			var cart = userCart ?? new Cart { UserId = addToCartDto.UserId };
-
-			if (cart.Id == 0)
 			{
-				_context.Carts.Add(cart);
-				await _context.SaveChangesAsync();
+				throw new Exception("Product not found");
 			}
 
+			// Check if the product is already in the cart
 			var cartItem = await _context.CartItems
-				.FirstOrDefaultAsync(ci => ci.CartId == cart.Id && ci.ProductId == addToCartDto.ProductId);
+				.FirstOrDefaultAsync(ci => ci.CartId == userCart.Id && ci.ProductId == addToCartDto.ProductId);
 
 			if (cartItem == null)
 			{
-				_context.CartItems.Add(new CartItem
+				// Add the product to the cart if it doesn't exist
+				cartItem = new CartItem
 				{
-					CartId = cart.Id,
+					CartId = userCart.Id,
 					ProductId = addToCartDto.ProductId,
 					Quantity = addToCartDto.Quantity
-				});
+				};
+				_context.CartItems.Add(cartItem);
 			}
 			else
 			{
-				cartItem.Quantity += addToCartDto.Quantity;  // Increase quantity if item already exists in the cart
+				// Update the quantity if the product is already in the cart
+				cartItem.Quantity += addToCartDto.Quantity;
 			}
 
+			// Save changes to the database
 			await _context.SaveChangesAsync();
 
+			// Return the updated cart response
 			return new CartResponseDto
 			{
-				IsSuccess = true,
-				Message = "Product added to cart.",
-				CartId = cart.Id,
-				UserId = cart.UserId,
-				Items = cart.Items.Select(ci => new CartItemDto
-				{
-					ProductId = ci.ProductId,
-					ProductName = ci.Product.Name,
-					Quantity = ci.Quantity,
-					Price = ci.Product.Price,
-					TotalPrice = ci.Quantity * ci.Product.Price
-				}).ToList(),
-				TotalAmount = cart.Items.Sum(ci => ci.Quantity * ci.Product.Price)
+				Id = userCart.Id,
+				CartId = userCart.Id,
+				UserId = userCart.UserId,
+				IsActive = userCart.IsActive,
+				Items = await _context.CartItems
+					.Where(ci => ci.CartId == userCart.Id)
+					.Select(ci => new CartItemDto
+					{
+						ProductId = ci.ProductId,
+						imgUrl = ci.Product.ImageUrl,
+						ProductName = ci.Product.Name,
+						Quantity = ci.Quantity,
+						Price = ci.Product.Price,
+						TotalPrice = ci.Quantity * ci.Product.Price
+					}).ToListAsync(),
+				TotalAmount = await _context.CartItems
+					.Where(ci => ci.CartId == userCart.Id)
+					.SumAsync(ci => ci.Quantity * ci.Product.Price)
 			};
 		}
 
@@ -146,33 +159,54 @@ namespace Sport_Web.Implementation
 
 
 
-		public async Task<CartResponseDto> UpdateCartAsync(int userId, int productId, int newQuantity)
+		public async Task<CartResponseDto> UpdateCartAsync(UpdateCartDto updateCartDto)
 		{
 			var cart = await _context.Carts
-				.Where(c => c.UserId == userId)
-				.Include(c => c.Items)
-					.ThenInclude(ci => ci.Product)  // Ensure Product is included
+				.Where(c => c.UserId == updateCartDto.UserId)
 				.FirstOrDefaultAsync();
 
 			if (cart == null)
-				return new CartResponseDto { IsSuccess = false, Message = "Cart not found." };
+				throw new Exception("Cart not found");
 
 			var cartItem = await _context.CartItems
-				.FirstOrDefaultAsync(ci => ci.CartId == cart.Id && ci.ProductId == productId);
-
+				.FirstOrDefaultAsync(ci => ci.CartId == cart.Id && ci.ProductId == updateCartDto.ProductId);
 			if (cartItem == null)
-				return new CartResponseDto { IsSuccess = false, Message = "Product not found in cart." };
+			{
+				// If the item is not found, create a new cart item
+				cartItem = new CartItem
+				{
+					CartId = cart.Id,
+					ProductId = updateCartDto.ProductId,
+					Quantity = updateCartDto.NewQuantity
+				};
+				_context.CartItems.Add(cartItem);
+			}
+			else
+			{
+				// If the item already exists, increment the quantity
+				cartItem.Quantity += updateCartDto.NewQuantity;
+			}
 
-			cartItem.Quantity = newQuantity;
+
+			// Check if cart still has at least one item with quantity > 0
+			cart.IsActive = await _context.CartItems
+				.AnyAsync(ci => ci.CartId == cart.Id && ci.Quantity > 0);
+
 			await _context.SaveChangesAsync();
+
+			// Reload updated items with product info to avoid stale data
+			var updatedItems = await _context.CartItems
+				.Where(ci => ci.CartId == cart.Id)
+				.Include(ci => ci.Product)
+				.ToListAsync();
 
 			return new CartResponseDto
 			{
-				IsSuccess = true,
-				Message = "Cart updated successfully.",
+				Id = cart.Id,
 				CartId = cart.Id,
 				UserId = cart.UserId,
-				Items = cart.Items.Select(ci => new CartItemDto
+				IsActive = cart.IsActive,
+				Items = updatedItems.Select(ci => new CartItemDto
 				{
 					ProductId = ci.ProductId,
 					ProductName = ci.Product.Name,
@@ -180,20 +214,27 @@ namespace Sport_Web.Implementation
 					Price = ci.Product.Price,
 					TotalPrice = ci.Quantity * ci.Product.Price
 				}).ToList(),
-				TotalAmount = cart.Items.Sum(ci => ci.Quantity * ci.Product.Price)
+				TotalAmount = updatedItems.Sum(ci => ci.Quantity * ci.Product.Price)
 			};
 		}
 
 
+
 		public async Task<bool> CheckoutAsync(int userId)
 		{
-			// Fetch the cart for the user
+			// Fetch the latest active cart for the user
 			var cart = await _context.Carts
 				.Where(c => c.UserId == userId && c.IsActive)
 				.Include(c => c.Items)
+				.Include(c => c.Delivery)
 				.FirstOrDefaultAsync();
 
+			// If no active cart exists, return false (User has nothing to checkout)
 			if (cart == null) return false;
+
+			// Mark the current cart as inactive
+			cart.IsActive = false;
+			cart.LastCheckoutTime = DateTime.UtcNow;
 
 			// Create or update delivery info
 			if (cart.Delivery == null)
@@ -201,27 +242,108 @@ namespace Sport_Web.Implementation
 				cart.Delivery = new Delivery
 				{
 					CartId = cart.Id,
-					Status = DeliveryStatus.Received, // Set default status as Received
-					DeliveryDate = DateTime.UtcNow.AddDays(5) // Default delivery date
+					Status = DeliveryStatus.Received,
+					DeliveryDate = DateTime.UtcNow.AddDays(5)
 				};
 				_context.Deliveries.Add(cart.Delivery);
 			}
 			else
 			{
-				cart.Delivery.Status = DeliveryStatus.Completed; // If delivery exists, update status
+				cart.Delivery.Status = DeliveryStatus.Completed;
+				_context.Entry(cart.Delivery).State = EntityState.Modified;
 			}
 
-			// Deactivate the cart after checkout
-			cart.IsActive = false;
-
-			// Set the LastCheckoutTime
-			cart.LastCheckoutTime = DateTime.UtcNow;
-
-			// Save changes to the database
+			// Save checkout changes
 			await _context.SaveChangesAsync();
 
-			return true; // Checkout was successful
+			return true;
 		}
+
+
+		//public async Task<bool> CheckoutAsync(int userId)
+		//{
+		//	// Fetch the active cart for the user
+		//	var cart = await _context.Carts
+		//		.Where(c => c.UserId == userId && c.IsActive)
+		//		.Include(c => c.Items)
+		//		.Include(c => c.Delivery) // Include delivery to check if it exists
+		//		.FirstOrDefaultAsync();
+
+		//	if (cart == null) return false; // No active cart found
+
+		//	// Create or update delivery info
+		//	if (cart.Delivery == null)
+		//	{
+		//		cart.Delivery = new Delivery
+		//		{
+		//			CartId = cart.Id,
+		//			Status = DeliveryStatus.Received,
+		//			DeliveryDate = DateTime.UtcNow.AddDays(5) // Default delivery date
+		//		};
+		//		_context.Deliveries.Add(cart.Delivery);
+		//	}
+		//	else
+		//	{
+		//		cart.Delivery.Status = DeliveryStatus.Completed;
+		//		_context.Entry(cart.Delivery).State = EntityState.Modified; // Ensure update
+		//	}
+
+		//	// Mark cart as inactive after checkout
+		//	cart.IsActive = false;
+		//	cart.LastCheckoutTime = DateTime.UtcNow;
+
+		//	// Create a new active cart for the user after checkout
+		//	//var newCart = new Cart
+		//	//{
+		//	//	UserId = userId,
+		//	//	IsActive = true
+		//	//};
+		//	//_context.Carts.Add(newCart); // Add a new active cart for future items
+
+		//	// Save changes to the database
+		//	await _context.SaveChangesAsync();
+
+		//	return true; // Checkout successful
+		//}
+
+
+		//public async Task<bool> CheckoutAsync(int userId)
+		//{
+		//	// Fetch the cart for the user
+		//	var cart = await _context.Carts
+		//		.Where(c => c.UserId == userId && c.IsActive)
+		//		.Include(c => c.Items)
+		//		.FirstOrDefaultAsync();
+
+		//	if (cart == null) return false;
+
+		//	// Create or update delivery info
+		//	if (cart.Delivery == null)
+		//	{
+		//		cart.Delivery = new Delivery
+		//		{
+		//			CartId = cart.Id,
+		//			Status = DeliveryStatus.Received, // Set default status as Received
+		//			DeliveryDate = DateTime.UtcNow.AddDays(5) // Default delivery date
+		//		};
+		//		_context.Deliveries.Add(cart.Delivery);
+		//	}
+		//	else
+		//	{
+		//		cart.Delivery.Status = DeliveryStatus.Completed; // If delivery exists, update status
+		//	}
+
+		//	// Deactivate the cart after checkout
+		//	cart.IsActive = false;
+
+		//	// Set the LastCheckoutTime
+		//	cart.LastCheckoutTime = DateTime.UtcNow;
+
+		//	// Save changes to the database
+		//	await _context.SaveChangesAsync();
+
+		//	return true; // Checkout was successful
+		//}
 
 		public async Task<List<CartResponseDto>> GetAllCartsAsync()
 		{
@@ -230,11 +352,10 @@ namespace Sport_Web.Implementation
 								  .Select(c=> new CartResponseDto
 								  {
 
-
-									  IsSuccess = true,
-								       Message = "Cart updated successfully.",
+									  Id = c.Id,
 									  CartId = c.Id,
 									  UserId = c.UserId,
+									  IsActive = c.IsActive,		
 									  Items = c.Items.Select(ci => new CartItemDto
 									  {
 										  ProductId = ci.ProductId,
@@ -295,8 +416,10 @@ namespace Sport_Web.Implementation
 
 			return new CartResponseDto
 			{			
-				Id = cartId,
+				Id = cartDetail.Id,	
+				CartId = cartDetail.Id,	
 				UserId = cartDetail.UserId,
+				IsActive = cartDetail.IsActive,	
 				Items = cartDetail.Items.Select(ci => new CartItemDto
 				{
 					ProductId = ci.ProductId,

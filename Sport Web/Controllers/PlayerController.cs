@@ -6,6 +6,8 @@ using Sport_Web.Implementation;
 
 namespace Sport_Web.Controllers
 {
+	[ApiController]
+	[Route("api/players")]
 	public class PlayerController
 	{
 		private readonly IPlayerService _playerService;	

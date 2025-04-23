@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Sport_Web.Abstraction;
 using Sport_Web.Data;
 using Sport_Web.DTO;
@@ -6,15 +7,19 @@ using Sport_Web.Implementation;
 
 namespace Sport_Web.Controllers
 {
+	[ApiController]
+	[Route("api/admin/teams")]
+	[Authorize(Roles = "Admin")]
+
 	public class TeamManagementController : ControllerBase
 	{
 
 		private readonly IteamsService _iteamsService;
-		private readonly ApplicationDbContext _context;
 
-		public TeamManagementController(IteamsService iteamsService, ApplicationDbContext dbContext)
+		public TeamManagementController(IteamsService iteamsService)
 		{
-			_context = dbContext;
+			
+			_iteamsService = iteamsService;	
 		}
 
 

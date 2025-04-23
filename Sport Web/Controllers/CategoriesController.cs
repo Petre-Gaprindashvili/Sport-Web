@@ -29,21 +29,44 @@ namespace Sport_Web.Controllers
 
 		}
 
-		[HttpGet("GetCategory{id}")]
-		public async Task<IActionResult> GetCategory(int id)
+		[HttpGet("GetAllSubCategory/{id}")]
+		public async Task<IActionResult> GetAllSubCategory(int id)
 		{
-			var getCategory = await _categoryService.GetCategoryByIdAsync(id);
-			if (getCategory == null) return BadRequest("Invalid id");
-			return Ok(getCategory);
+			var getAllSubCategory = await _categoryService.GetAllSubCategoryAsync(id);
+			if (getAllSubCategory == null) return BadRequest("Invalid id");
+			return Ok(getAllSubCategory);
+		}
+
+		[HttpGet("GetSingleSubcategory/{id}")]
+		public async Task<IActionResult> GetSingleSubcategory(int id)
+		{
+			var getSingleSubCategory = await _categoryService.GetSingleSubcategoryByIdAsync(id);
+			if (getSingleSubCategory == null) return BadRequest("Invalid id");
+			return Ok(getSingleSubCategory);
 		}
 
 
 		[HttpGet("GetAllTabs")]
-		public async Task<IActionResult> GetTabsByCategoryId()
+		public async Task<IActionResult> GetTabsByCategoryId(int categoryId)
 		{
-			var tabs = await _categoryService.GetAllTabsAsync();
-			return Ok(tabs);
+			try
+			{
+				var tabs = await _categoryService.GetAllTabsAsync(categoryId);
+
+				if (!tabs.Any())  // If no tabs are returned
+				{
+					return NotFound(new { message = "No tabs found for this category." });
+				}
+
+				return Ok(tabs);  // Return the found tabs
+			}
+			catch (Exception ex)
+			{
+				// Log the exception and return a general server error
+				return StatusCode(500, new { message = ex.Message });
+			}
 		}
+
 	}
 }
 

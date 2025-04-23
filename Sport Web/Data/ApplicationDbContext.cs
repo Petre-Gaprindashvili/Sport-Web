@@ -13,11 +13,12 @@ namespace Sport_Web.Data
 		public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
 		public DbSet<Category> Categories { get; set; }	
 		public DbSet<CategorySection> categorySections { get; set; }
-		public DbSet<Sport_Web.Models.SectionContent> SectionContents { get; set; }
+		//public DbSet<Sport_Web.Models.SectionContent> SectionContents { get; set; }
 		//public DbSet<Home> Homes { get; set; }
 		public DbSet<Team> Teams { get; set; }
+		public DbSet<News> News { get; set; }	
 		public DbSet<Match> Matches { get; set; }		
-		public DbSet<Articles> Articles { get; set; }
+		//public DbSet<Articles> Articles { get; set; }
 		public DbSet<Player> Players { get; set; }
 		public DbSet<Cart> Carts { get; set; }
 		public DbSet<CartItem> CartItems { get; set; }
@@ -48,17 +49,23 @@ namespace Sport_Web.Data
 	   .WithOne(t => t.Category)
 	   .HasForeignKey(t => t.CategoryId)
 	   .OnDelete(DeleteBehavior.Cascade);
-			//modelBuilder.Entity<Category>()
-   //.HasMany(c => c.homes)
-   //.WithOne(t => t.Category)
-   //.HasForeignKey(t => t.SectionContentId)
-   //.OnDelete(DeleteBehavior.Cascade);
+			modelBuilder.Entity<Category>()
+   .HasMany(c => c.News)
+   .WithOne(t => t.Category)
+   .HasForeignKey(t => t.CategoryId)
+   .OnDelete(DeleteBehavior.Cascade);
 
 			modelBuilder.Entity<Team>()
 		.HasMany(t => t.Players)
 		.WithOne(p => p.Team)
 		.HasForeignKey(p => p.TeamId)
 		.OnDelete(DeleteBehavior.Cascade);
+			modelBuilder.Entity<News>()
+		   .HasOne(n => n.Teams)
+		   .WithMany(t => t.News)
+		   .HasForeignKey(n => n.TeamId)
+		   .OnDelete(DeleteBehavior.SetNull);  // If a team is deleted, set the TeamId to null in the news
+
 
 			modelBuilder.Entity<Category>()
 	.HasKey(s => s.Id); 
@@ -75,8 +82,8 @@ namespace Sport_Web.Data
 		  v => (CategoryType)Enum.Parse(typeof(CategoryType), v) 
 	  );
 
-		//	modelBuilder.Entity<Sport_Web.Models.SectionContent>()
-		//.HasKey(tc => tc.Id);  // Primary key
+			//	modelBuilder.Entity<Sport_Web.Models.SectionContent>()
+			//.HasKey(tc => tc.Id);  // Primary key
 
 			//modelBuilder.Entity<Sport_Web.Models.SectionContent>()
 			//	.HasOne(tc => tc.CategorySection)
@@ -84,23 +91,40 @@ namespace Sport_Web.Data
 			//	.HasForeignKey(tc => tc.CategorySectionId)
 			//	.OnDelete(DeleteBehavior.Restrict);
 
-		
-		//	modelBuilder.Entity<Home>()
-		//.HasOne(t => t.SectionContent)  
-		//.WithMany(sc => sc.HomeContent)  
-		//.HasForeignKey(t => t.SectionContentId)  
-		//.OnDelete(DeleteBehavior.Cascade);
 
-			modelBuilder.Entity<Team>()
-	.HasOne(t => t.SectionContent)
-	.WithMany(sc => sc.Teams)
-	.HasForeignKey(t => t.CategoryId)
-	.OnDelete(DeleteBehavior.Cascade);
-//			modelBuilder.Entity<Articles>()
+			//	modelBuilder.Entity<Home>()
+			//.HasOne(t => t.SectionContent)  
+			//.WithMany(sc => sc.HomeContent)  
+			//.HasForeignKey(t => t.SectionContentId)  
+			//.OnDelete(DeleteBehavior.Cascade);
+
+//			modelBuilder.Entity<Team>()
+//	.HasOne(t => t.SectionContent)
+//	.WithMany(sc => sc.Teams)
+//	.HasForeignKey(t => t.CategoryId)
+//	.OnDelete(DeleteBehavior.Cascade);
+//			modelBuilder.Entity<News>()
 //.HasOne(t => t.SectionContent)
-//.WithMany(sc => sc.Articles)
+//.WithMany(sc => sc.News)
 //.HasForeignKey(t => t.CategoryId)
 //.OnDelete(DeleteBehavior.Cascade);
+
+			//			modelBuilder.Entity<Articles>()
+			//.HasOne(t => t.SectionContent)
+			//.WithMany(sc => sc.Articles)
+			//.HasForeignKey(t => t.CategoryId)
+			//.OnDelete(DeleteBehavior.Cascade);
+			//modelBuilder.Entity<Articles>()
+			//	.HasOne(a => a.Category)
+			//	.WithMany()
+			//	.HasForeignKey(a => a.CategoryId);
+
+			//modelBuilder.Entity<Articles>()
+			//	.HasOne(a => a.SectionContent)
+			//	.WithMany(sc => sc.Articles)
+			//	.HasForeignKey(a => a.CategoryId)
+			//	.OnDelete(DeleteBehavior.Cascade);
+
 
 
 			modelBuilder.Entity<Match>()
