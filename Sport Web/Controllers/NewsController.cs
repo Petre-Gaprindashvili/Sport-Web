@@ -19,6 +19,14 @@ namespace Sport_Web.Controllers
 			_newsService = newsService;	
 		}
 
+		[HttpGet("GetNewsByParentCategory")]
+		public async Task<IActionResult> GrtNewsByParentCategoryId()
+		{
+			var response = await _newsService.GetNewsByParentCategoryAsync();
+			return Ok(response);
+
+		}
+
 		[HttpGet("GetNewsByCategory/{categoryId}")]
 		public async Task<IActionResult> GetNewsByCategory(int categoryId)
 		{

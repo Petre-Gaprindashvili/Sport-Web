@@ -8,13 +8,62 @@ namespace Sport_Web.Implementation
 	public class MatchesService:IMatchesService
 	{
 		private readonly ApplicationDbContext _context;
-		private readonly IImageUploadService _imageUploadService;
 
-		public MatchesService(ApplicationDbContext context, IImageUploadService imageUploadService)
+		public MatchesService(ApplicationDbContext context)
 		{
 			_context = context;
-			_imageUploadService = imageUploadService;
 		}
+
+		public async Task<List<MatchesResponseDto>> GetAllMatchesAsync()
+		{
+			var matches = await _context.Matches
+				.Include(m => m.HomeTeam)
+				.Include(m => m.AwayTeam)
+				.Include(m => m.HomeTeam.Category)
+				.Include(m => m.AwayTeam.Category).ToListAsync();
+
+			var upcomingMatches = matches.Where(m => m.MatchDate > DateTime.Now).ToList();
+			var pastMatches = matches.Where(m => m.MatchDate <= DateTime.Now).ToList();
+
+			var combinedMatches = upcomingMatches.Concat(pastMatches).ToList();
+
+			if (!combinedMatches.Any())
+			{
+				return new List<MatchesResponseDto>
+		{
+			new MatchesResponseDto
+			{
+				IsSuccess = false,
+				Message = "No matches available."
+			}
+		};
+			}
+
+			
+			return combinedMatches.Select(match=> new MatchesResponseDto
+			{
+				Id = match.Id,
+				HomeTeamName = match.HomeTeam.Name,
+				AwayTeamName = match.AwayTeam.Name,
+				HomeScore = match.HomeScore,
+				AwayScore = match.AwayScore,
+				MatchDate = match.MatchDate,
+				Winner = match.MatchDate <= DateTime.Now
+					? (match.HomeScore > match.AwayScore
+						? match.HomeTeam.Name
+						: (match.HomeScore < match.AwayScore
+							? match.AwayTeam.Name
+							: null))
+					: null,
+				CategoryId = match.HomeTeam.CategoryId,
+				HomeTeamLogo = match.HomeTeamlogo,
+				AwayTeamLogo = match.AwayTeamlogo,
+				IsSuccess = true,
+				Message = "Matches retrieved successfully"
+			}).ToList();
+			
+		}
+
 
 		public async Task<List<MatchesResponseDto>> GetMatchesByCategoryId(int categoryId)
 		{
@@ -248,67 +297,6 @@ namespace Sport_Web.Implementation
 			};
 		}
 
-
-		//public async Task<MatchesResponseDto> AddMatchesAsync(MatchesDto matchesDto)
-		//{
-
-		//	var homeTeam = await _context.Teams.Include(t => t.Category).FirstOrDefaultAsync(t => t.Id == matchesDto.HomeTeamId);
-		//	var awayTeam = await _context.Teams.Include(t => t.Category).FirstOrDefaultAsync(t => t.Id == matchesDto.AwayTeamId);
-
-		//	if (homeTeam == null || awayTeam == null)
-		//	{
-		//		var response = new ResponseDto
-		//		{
-		//			IsSuccess = false,
-		//			Message = "One or both teams not found."
-		//		};
-		//	}
-
-
-		//	if (homeTeam.CategoryId != awayTeam.CategoryId)
-		//	{
-		//		var response = new ResponseDto
-		//		{
-		//			IsSuccess = false,
-		//			Message = "Teams must belong to the same category"
-		//		};
-		//	}
-
-		//	string homeTeamLogoUrl = await _imageUploadService.UploadImageAsync(matchesDto.HomeTeamLogo);
-		//	string awayTeamLogoUrl = await _imageUploadService.UploadImageAsync(matchesDto.AwayTeamLogo);
-
-		//	var match = new Sport_Web.Models.Match
-		//	{
-		//		HomeTeamId = matchesDto.HomeTeamId,
-		//		AwayTeamId = matchesDto.AwayTeamId,
-		//		HomeScore = matchesDto.HomeScore,
-		//		AwayScore = matchesDto.AwayScore,
-		//		MatchDate = matchesDto.MatchDate,
-		//		HomeTeamlogo = homeTeamLogoUrl,
-		//		AwayTeamlogo = awayTeamLogoUrl,
-
-
-		//	};
-
-		//	_context.Matches.Add(match);
-		//	await _context.SaveChangesAsync();
-
-		//	return new MatchesResponseDto
-		//	{
-		//		Id = match.Id,
-		//		HomeTeamName = homeTeam.Name,
-		//		AwayTeamName = awayTeam.Name,
-		//		HomeScore = match.HomeScore,
-		//		AwayScore = match.AwayScore,
-		//		MatchDate = match.MatchDate,
-		//		Winner = match.HomeScore > match.AwayScore ? homeTeam.Name : awayTeam.Name,
-		//		CategoryId = homeTeam.CategoryId,
-		//		CategoryName = homeTeam.Category.Name,
-		//		HomeTeamLogo = homeTeamLogoUrl,
-		//		AwayTeamLogo = awayTeamLogoUrl,
-		//	};
-
-		//}
 
 		public async Task<MatchesResponseDto> UpdateMatchesAsync(int id, UpdateMatchesDto updateMatchesDto)
 		{

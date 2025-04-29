@@ -9,12 +9,10 @@ namespace Sport_Web.Implementation
 	public class TeamServicecs :IteamsService
 	{
 		private readonly ApplicationDbContext _context;
-		private readonly IImageUploadService _imageUploadService;
 
-		public TeamServicecs(ApplicationDbContext context, IImageUploadService imageUploadService)
+		public TeamServicecs(ApplicationDbContext context)
 		{
 			_context = context;
-			_imageUploadService = imageUploadService;
 		}
 
 		public async Task<List<TeamResponseDto>> GetAllTeamByCategoryIdAsync(int categoryId)

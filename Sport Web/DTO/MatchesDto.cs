@@ -40,19 +40,5 @@ namespace Sport_Web.DTO
 		public string Message { get; set; }
 	}
 
-	//public class matchbyteam
-	//{
-	//	public int Id { get; set; }
-	//	public string HomeTeamName { get; set; }
-	//	public int HomeTeamId { get; set; }
-
-	//	public string HomeTeamLogo { get; set; }
-	//	public string AwayTeamName { get; set; }
-	//	public int AwayTeamId { get; set; }
-	//	public string AwayTeamLogo { get; set; }
-	//	public int? HomeScore { get; set; }
-	//	public int? AwayScore { get; set; }
-	//	public DateTime MatchDate { get; set; }
-	//}
 
 }

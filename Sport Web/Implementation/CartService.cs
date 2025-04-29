@@ -29,16 +29,17 @@ namespace Sport_Web.Implementation
 
 			if (cart == null)
 			{
-			  return new CartResponseDto
-			  {
-				  Id = 0,
-				  CartId = 0,
-				  UserId = userId,
-				  IsActive = false,
-				  Items = new List<CartItemDto>(), // Empty cart items
-				  TotalAmount = 0,
-				  //Message = "Your cart is empty."
-			  };
+				return new CartResponseDto
+				{
+					Id = 0,
+					CartId = 0,
+					UserId = userId,
+					IsActive = false,
+					Items = new List<CartItemDto>(), // Empty cart items
+					TotalAmount = 0,
+					
+					//Message = "Your cart is empty."
+				};
 
 				
 			}
@@ -50,6 +51,7 @@ namespace Sport_Web.Implementation
 				CartId = cart.Id,
 				UserId = cart.UserId,	
 				IsActive = cart.IsActive,	
+				
 				Items = cart.Items.Select(ci => new CartItemDto
 				{
 					ProductId = ci.ProductId,
@@ -57,7 +59,8 @@ namespace Sport_Web.Implementation
 					ProductName = ci.Product.Name,
 					Quantity = ci.Quantity,
 					Price = ci.Product.Price,
-					TotalPrice = ci.Quantity * ci.Product.Price
+					TotalPrice = ci.Quantity * ci.Product.Price,
+					Stock = ci.Product.Stock,	
 				}).ToList(),
 				TotalAmount = cart.Items.Sum(ci => ci.Quantity * ci.Product.Price)
 			};
@@ -95,6 +98,15 @@ namespace Sport_Web.Implementation
 			// Check if the product is already in the cart
 			var cartItem = await _context.CartItems
 				.FirstOrDefaultAsync(ci => ci.CartId == userCart.Id && ci.ProductId == addToCartDto.ProductId);
+
+			// Calculate the total requested quantity (existing + new)
+			int totalRequesedQuantity = addToCartDto.Quantity + (cartItem?.Quantity ?? 0);
+			if (totalRequesedQuantity > product.Stock)
+			{
+
+				int availableToAdd = product.Stock - (cartItem?.Quantity ?? 0);
+				throw new Exception($"Only {availableToAdd} item(s) available in stock for '{product.Name}'.");
+			}
 
 			if (cartItem == null)
 			{
@@ -141,10 +153,10 @@ namespace Sport_Web.Implementation
 		}
 
 
-		public async Task<bool> RemoveFromCartAsync(int cartItemId)
+		public async Task<bool> RemoveFromCartAsync(int productId)
 		{
 
-			var cartItem = await _context.CartItems.FindAsync(cartItemId);
+			var cartItem = await _context.CartItems.FirstOrDefaultAsync(c=>c.ProductId == productId);
 
 			if (cartItem == null)
 			{
@@ -172,20 +184,27 @@ namespace Sport_Web.Implementation
 				.FirstOrDefaultAsync(ci => ci.CartId == cart.Id && ci.ProductId == updateCartDto.ProductId);
 			if (cartItem == null)
 			{
-				// If the item is not found, create a new cart item
-				cartItem = new CartItem
-				{
-					CartId = cart.Id,
-					ProductId = updateCartDto.ProductId,
-					Quantity = updateCartDto.NewQuantity
-				};
-				_context.CartItems.Add(cartItem);
+				throw new Exception("Cart item not found");
+
+				//// If the item is not found, create a new cart item
+				//cartItem = new CartItem
+				//{
+				//	CartId = cart.Id,
+				//	ProductId = updateCartDto.ProductId,
+				//	Quantity = updateCartDto.NewQuantity
+				//};
+				//_context.CartItems.Add(cartItem);
 			}
 			else
 			{
-				// If the item already exists, increment the quantity
-				cartItem.Quantity += updateCartDto.NewQuantity;
+					cartItem.Quantity = updateCartDto.NewQuantity;
+
 			}
+			//else
+			//{
+			//	// If the item already exists, increment the quantity
+			//	cartItem.Quantity += updateCartDto.NewQuantity;
+			//}
 
 
 			// Check if cart still has at least one item with quantity > 0

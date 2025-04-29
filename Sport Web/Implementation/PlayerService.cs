@@ -9,12 +9,10 @@ namespace Sport_Web.Implementation
 	public class PlayerService:IPlayerService
 	{
 		private readonly ApplicationDbContext _context;
-		private readonly IImageUploadService _imageUploadService;
 
-		public PlayerService(ApplicationDbContext context, IImageUploadService imageUploadService)
+		public PlayerService(ApplicationDbContext context)
 		{
 			_context = context;
-			_imageUploadService = imageUploadService;
 		}
 
 		public async Task<List<PlayersResponseDto>> GetPlayersByTeamIdAsync(int teamId)

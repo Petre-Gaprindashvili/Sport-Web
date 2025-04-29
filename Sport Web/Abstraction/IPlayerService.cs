@@ -6,6 +6,7 @@ namespace Sport_Web.Abstraction
 	{
 		Task<List<PlayersResponseDto>> GetPlayersByTeamIdAsync(int teamId);
 
+		// Admin-specific methods:
 		Task<PlayersResponseDto> AddPlayerAsync(PlayerDto playerDto);
 		Task<PlayersResponseDto> GetPlayerByIdAsync(int playerId);
 		Task<PlayersResponseDto> UpdatePlayerAsync(int playerId, PlayerDto playerDto);

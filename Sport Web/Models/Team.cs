@@ -16,7 +16,6 @@ namespace Sport_Web.Models
 
 		public ICollection<Match> HomeMatches { get; set; }
 	    public ICollection<Match> AwayMatches { get; set; }
-		//public SectionContent SectionContent { get; set; }  
 
 	}
 }

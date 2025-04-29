@@ -14,13 +14,11 @@ namespace Sport_Web.Implementation
 	public class CategoryService : ICategoryService
 	{
 		private readonly ApplicationDbContext _context;
-		private readonly IImageUploadService _imageUploadService;
 
 
-		public CategoryService(IImageUploadService imageUploadService, ApplicationDbContext context)
+		public CategoryService( ApplicationDbContext context)
 		{
 			_context = context;
-			_imageUploadService = imageUploadService;
 
 		}
 
@@ -79,14 +77,6 @@ namespace Sport_Web.Implementation
 				}).ToList()
 			};
 			return categoryResponse;
-			//var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
-			//if (category == null) return null;
-
-			//return new CategoryResponseDto
-			//{
-			//	Id = category.Id,
-			//	Name = category.Name,
-			//};
 
 		}
 
@@ -237,21 +227,11 @@ namespace Sport_Web.Implementation
 			_context.categorySections.Add(categorySection);
 			await _context.SaveChangesAsync();
 
-			//var sectionContent = new Sport_Web.Models.SectionContent
-			//{
-			//	CategorySectionId = categoryTab.CategoryId,
-			//	ContentType = categoryTab.TabName,
-
-			//};
-
-			//_context.SectionContents.Add(sectionContent);
-			//await _context.SaveChangesAsync();
 
 			return new SectionCategortResponseDto
 			{
 
 				SectionName = categorySection.TabName,
-				//CategoryId = categorySection.CategoryId,
 
 			};
 

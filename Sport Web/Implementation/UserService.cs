@@ -63,16 +63,20 @@ namespace Sport_Web.Implementation
 
             }
 
-            var user = new User
+			// Create a new User object with the provided registration data.
+			// The password is securely hashed, and the account is marked as active with the current timestamp.
+			var user = new User
             {
                 UserName = registerDto.UserName,
                 Email = registerDto.Email,
                 PasswordHash = _passwordHasher.HashPassword(null, registerDto.Password),
-                //Role = "User",
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
             };
-            string adminPattern = @"^Admin";
+
+			// Determine the user's role based on the email local part (before the '@').
+			// If the local part starts with "Admin", assign the "Admin" role. Otherwise, assign the "User" role.
+			string adminPattern = @"^Admin";
             string localPart = user.Email.Split('@')[0];
 
             if (Regex.IsMatch(localPart, adminPattern))

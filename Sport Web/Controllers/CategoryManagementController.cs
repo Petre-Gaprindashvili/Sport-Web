@@ -25,13 +25,13 @@ namespace Sport_Web.Controllers
 		
 		}
 		[HttpPost("AddNewCategory")]
-		public async Task<IActionResult> AddCategory([FromBody] CategoryDto categoryDto)
+		public async Task<IActionResult> AddCategory( CategoryDto categoryDto)
 		{
 
 			var category = await _categoryService.AddCategoryAsync(categoryDto);
 			if (category == null)
 			{
-				return BadRequest("kkkkk");
+				return BadRequest();
 			}
 			return Ok(categoryDto);
 		}
@@ -110,20 +110,6 @@ namespace Sport_Web.Controllers
 
 		}
 
-
-
-		//[HttpPost("AddTeam/{tabId}")]
-		//public async Task<IActionResult> AddTabContent(int tabId, TeamDto teamDto)
-		//{
-		//	var result = await _categoryService.AddTabContentAsync(tabId, teamDto);
-
-		//	if (result == null)
-		//	{
-		//		return  NotFound(new { message = "categorytab not found." });
-		//	}
-
-		//	return Ok(result);
-		//}	
 
 	}
 

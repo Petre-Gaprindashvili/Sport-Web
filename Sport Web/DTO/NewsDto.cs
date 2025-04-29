@@ -1,4 +1,6 @@
-﻿namespace Sport_Web.DTO
+﻿using Sport_Web.Models;
+
+namespace Sport_Web.DTO
 {
 	public class NewsDto
 	{
@@ -19,7 +21,9 @@
 		public DateTime PublishedDate { get; set; }
 		public int CategoryId { get; set; }
 		public string? videoUrl { get; set; }
+		public string parentCategoryName { get; set; }	
 	}
 
 }
+
 

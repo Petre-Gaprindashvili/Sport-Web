@@ -10,12 +10,11 @@ namespace Sport_Web.Implementation
 	{
 
 		private readonly ApplicationDbContext _context;
-		private readonly IImageUploadService _imageUploadService;
 
-		public ProductService(ApplicationDbContext context, IImageUploadService imageUploadService)
+		public ProductService(ApplicationDbContext context)
 		{
 			_context = context;
-			_imageUploadService = imageUploadService;
+		
 		}
 
 		public async Task<List<ProductResponseDtocs>> GetProductsByTeamIdAsync(int teamId)

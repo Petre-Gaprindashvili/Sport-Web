@@ -37,10 +37,10 @@ namespace Sport_Web.Controllers
 		}
 
 
-		[HttpDelete("RemoveFromCart/{cartItemId}")]
-		public async Task<IActionResult> AddToCart(int cartItemId)
+		[HttpDelete("RemoveFromCart/{productId}")]
+		public async Task<IActionResult> removeFromCart(int productId)
 		{
-			var cart = await _cartService.RemoveFromCartAsync(cartItemId);
+			var cart = await _cartService.RemoveFromCartAsync(productId);
 
 			return Ok(cart);
 		}
@@ -49,8 +49,8 @@ namespace Sport_Web.Controllers
 		public async Task<IActionResult> Checkout(int userId)
 		{
 			var success = await _cartService.CheckoutAsync(userId);
-			if (!success) return BadRequest("Checkout failed.");
-			return Ok("Checkout successful.");
+			if (success == null) return null;
+			return Ok(new { message = "Checkout success" }); // send something!
 		}
 	}
 }

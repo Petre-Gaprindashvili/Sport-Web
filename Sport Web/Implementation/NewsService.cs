@@ -9,12 +9,32 @@ namespace Sport_Web.Implementation
 	public class NewsService : INewsService
 	{
 		private readonly ApplicationDbContext _context;
-		private readonly IImageUploadService _imageUploadService;
-		public NewsService(ApplicationDbContext context, IImageUploadService imageUploadService)
+		public NewsService(ApplicationDbContext context)
 		{
 			_context = context;
-			_imageUploadService = imageUploadService;
 		}
+
+		public async Task<List<NewsResponseDto>> GetNewsByParentCategoryAsync()
+		{
+			var news = await _context.News
+				.Include(c => c.Category)
+				.Select(t => new NewsResponseDto
+				{
+					Id = t.Id,
+					Title = t.Title,
+					Content = t.Content,
+					ImageUrl = t.Image,
+					PublishedDate = t.PublishedDate,
+					CategoryId = t.CategoryId,
+					videoUrl = t.VideoUrl,
+					parentCategoryName = t.Category.ParentCategory.Name
+				})
+				.ToListAsync();
+
+			return news;
+		}
+
+
 		public async Task<List<NewsResponseDto>> GetNewsByCategoryIdAsync(int categoryId)
 		{
 
@@ -107,43 +127,6 @@ namespace Sport_Web.Implementation
 				// Optionally add TeamId to the response DTO if needed
 			};
 		}
-
-
-
-		//public async Task<NewsResponseDto> AddNewsAsync(NewsDto newsDto)
-		//{
-		//	var sectionContent = await _context.categorySections.FirstOrDefaultAsync(c => c.CategoryId == newsDto.CategoryId);
-		//	if (sectionContent == null) return null;
-
-
-		//	string image =  newsDto.ImageUrl;
-
-		//	var news = new News
-		//	{
-
-
-		//		Title = newsDto.Title,
-		//		Content = newsDto.Content,
-		//		Image = image,
-		//		PublishedDate = newsDto.PublishedDate,
-		//		CategoryId = newsDto.CategoryId,
-		//	};
-		//	_context.News.Add(news);
-		//	await _context.SaveChangesAsync();
-
-		//	return new NewsResponseDto
-		//	{
-		//		Id = news.Id,
-		//		Title = news.Title,
-		//		Content = news.Content,
-		//		PublishedDate = news.PublishedDate,
-		//		CategoryId = news.CategoryId,
-		//		ImageUrl = news.Image,
-
-		//	};
-
-		//}
-
 
 
 		public async Task<NewsResponseDto> UpdateNewsAsync(int id, NewsDto newsDto)

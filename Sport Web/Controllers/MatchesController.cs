@@ -19,6 +19,14 @@ namespace Sport_Web.Controllers
 			_matchesService = matchesService;
 		}
 
+		[HttpGet("GetAllMatches")]
+		public async Task<IActionResult> GetAllMatches()
+		{
+			var response = await _matchesService.GetAllMatchesAsync();
+			return Ok(response);
+
+		}
+
 		[HttpGet("GetMatches/{categoryId}")]
 		public async Task<IActionResult> GetMatchesByCategory(int categoryId)
 		{

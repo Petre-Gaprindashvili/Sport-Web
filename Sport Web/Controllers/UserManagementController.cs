@@ -6,7 +6,7 @@ namespace Sport_Web.Controllers
 {
 	[ApiController]
 	[Route("api/admin/users")]
-	////[Authorize(Roles = "Admin")]
+	[Authorize(Roles = "Admin")]
 	public class UserManagementController : Controller
 	{
 		private readonly IUserService _userService;

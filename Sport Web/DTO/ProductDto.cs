@@ -9,7 +9,7 @@
 		public int Stock { get; set; }
 		public bool IsAvailable { get; set; }
 		public int? TeamId { get; set; }
-		public int Quantity { get; set; } // ✅ Add this
+		public int Quantity { get; set; }
 
 	}
 
@@ -23,7 +23,7 @@
 		public int Stock { get; set; }
 		public bool IsAvailable { get; set; }
 		public int? TeamId { get; set; }
-		public int Quantity { get; set; } // ✅ Add this
+		public int Quantity { get; set; } 
 
 	}
 

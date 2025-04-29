@@ -9,8 +9,6 @@ namespace Sport_Web.Abstraction
 		Task<CategoryWithSubCategoriesDto> GetAllSubCategoryAsync(int id);
 		Task<SubCategoryResponseDto> GetSingleSubcategoryByIdAsync(int id);	
 		Task< List<SectionCategortResponseDto>> GetAllTabsAsync(int categoryId);
-		
-		//Task<List<TeamDto>> GetAllTeamsAsync();
 
 
 		// Admin-specific methods:
@@ -23,10 +21,6 @@ namespace Sport_Web.Abstraction
 		Task<SectionCategortResponseDto> AddSectionAsync(SectionCategoryDto sectionCategoryDto);
 		Task<SectionCategortResponseDto> UpdateSectionAsync(int id, SectionCategoryDto sectionCategoryDto);
 		Task<bool> DeleteSectionAsync(int id);
-
-		//Task<TeamResponseDto> AddTeamAsync();
-
-
 
 	}
 }

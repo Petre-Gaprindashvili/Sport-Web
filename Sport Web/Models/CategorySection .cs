@@ -10,7 +10,6 @@ namespace Sport_Web.Models
 		public int CategoryId { get; set; }  
 		public CategoryType CategoryType { get; set; }	
 		public Category Category { get; set; }
-		//public ICollection<SectionContent> SectionContents { get; set; }
 
 	}
 }
